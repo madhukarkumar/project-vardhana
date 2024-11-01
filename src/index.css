@@ -1,0 +1,39 @@
+@import url('https://use.typekit.net/itc-avant-garde-gothic-pro.css');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+  }
+
+  :root[class~="dark"] {
+    --background: 222.2 84% 4.9%;
+    --foreground: 0 0% 100%;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased dark:bg-gray-900 dark:text-gray-50 font-avant-garde;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+.bg-grid-dark {
+  background-size: 50px 50px;
+  background-image: 
+    linear-gradient(to right, rgb(38, 38, 38, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(38, 38, 38, 0.1) 1px, transparent 1px);
+}
