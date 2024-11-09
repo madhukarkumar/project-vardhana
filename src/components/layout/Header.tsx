@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bell, Search, User, Moon, Sun } from 'lucide-react';
+import { Bell, Search, User, Moon, Sun, Menu } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
 
 interface HeaderProps {
@@ -10,17 +10,16 @@ export function Header({ toggleSidebar }: HeaderProps) {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="h-16 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-6 flex items-center justify-between">
+    <header className="h-16 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-4 sm:px-6 flex items-center justify-between">
       <div className="flex items-center gap-4 flex-1">
         <button
           onClick={toggleSidebar}
-          className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg lg:hidden"
+          aria-label="Toggle sidebar"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
+          <Menu className="h-5 w-5" />
         </button>
-        <div className="relative max-w-md flex-1">
+        <div className="relative max-w-md flex-1 hidden sm:block">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
@@ -30,10 +29,11 @@ export function Header({ toggleSidebar }: HeaderProps) {
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 sm:gap-4">
         <button
           onClick={toggleTheme}
           className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          aria-label="Toggle theme"
         >
           {theme === 'dark' ? (
             <Sun className="h-5 w-5 text-gray-600 dark:text-gray-400" />
@@ -42,14 +42,20 @@ export function Header({ toggleSidebar }: HeaderProps) {
           )}
         </button>
 
-        <button className="relative rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800">
+        <button 
+          className="relative rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+          aria-label="Notifications"
+        >
           <Bell className="h-5 w-5 text-gray-600 dark:text-gray-400" />
           <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
         </button>
         
         <div className="flex items-center gap-3">
-          <span className="text-sm font-medium">John Doe</span>
-          <button className="h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-800 p-1">
+          <span className="text-sm font-medium hidden sm:block">John Doe</span>
+          <button 
+            className="h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-800 p-1"
+            aria-label="User menu"
+          >
             <User className="h-full w-full text-gray-600 dark:text-gray-400" />
           </button>
         </div>

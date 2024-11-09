@@ -50,7 +50,7 @@ export function PerformanceCharts() {
   return (
     <div className="mt-8 space-y-6">
       {/* Leads Chart */}
-      <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 p-6">
+      <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 p-4 sm:p-6 shadow-lg dark:shadow-gray-900/50">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Daily Leads Generated</h2>
         <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
@@ -87,7 +87,7 @@ export function PerformanceCharts() {
       </div>
 
       {/* Campaign Performance Table */}
-      <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 p-6">
+      <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 p-4 sm:p-6 shadow-lg dark:shadow-gray-900/50">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Campaign Performance</h2>
         <div className="overflow-x-auto">
           <table className="w-full">

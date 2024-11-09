@@ -78,7 +78,7 @@ export function Agents() {
         {agents.map((agent) => (
           <div
             key={agent.id}
-            className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 relative group"
+            className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 relative group shadow-lg dark:shadow-gray-900/50 hover:shadow-xl transition-all"
           >
             <div className="absolute right-4 top-4">
               <button 

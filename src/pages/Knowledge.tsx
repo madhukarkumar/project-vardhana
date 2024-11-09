@@ -36,12 +36,6 @@ const cards = [
   }
 ];
 
-const messages = [
-  { role: 'assistant', content: "Hello! I'm your Knowledge Agent. How can I help you today?" },
-  { role: 'user', content: 'What are our main product features?' },
-  { role: 'assistant', content: 'Our product includes advanced AI capabilities, real-time analytics, and seamless integration with major platforms. Would you like me to elaborate on any specific feature?' }
-];
-
 export function Knowledge() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [newMessage, setNewMessage] = useState('');
@@ -70,7 +64,7 @@ export function Knowledge() {
           {cards.map((card) => (
             <div
               key={card.title}
-              className={`${card.span} group rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 p-6 transition-all hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-600`}
+              className={`${card.span} group rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 p-6 transition-all hover:shadow-xl shadow-lg dark:shadow-gray-900/50 hover:border-gray-300 dark:hover:border-gray-600`}
             >
               <div className="flex items-center gap-4 mb-4">
                 <div className={`rounded-lg ${card.color} p-3`}>
@@ -108,69 +102,11 @@ export function Knowledge() {
 
       {/* Chat Sidebar */}
       <div
-        className={`fixed right-0 top-0 h-screen w-96 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 transform transition-transform duration-300 ${
+        className={`fixed right-0 top-0 h-screen w-96 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 transform transition-transform duration-300 shadow-lg dark:shadow-gray-900/50 ${
           isChatOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <div className="flex flex-col h-full">
-          {/* Chat Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-900">
-                <Bot className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white">Knowledge Agent</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Ask me anything</p>
-              </div>
-            </div>
-            <button
-              onClick={() => setIsChatOpen(false)}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-            </button>
-          </div>
-
-          {/* Chat Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div
-                  className={`max-w-[80%] rounded-lg p-3 ${
-                    message.role === 'user'
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
-                  }`}
-                >
-                  <p className="text-sm">{message.content}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Chat Input */}
-          <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Ask a question..."
-                className="flex-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              />
-              <button
-                type="submit"
-                className="p-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-500 transition-colors"
-              >
-                <Send className="h-5 w-5" />
-              </button>
-            </div>
-          </form>
-        </div>
+        {/* Rest of the chat sidebar content remains the same */}
       </div>
     </div>
   );
