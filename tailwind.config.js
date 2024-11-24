@@ -5,21 +5,31 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        poppins: ['Poppins', 'sans-serif'],
+        sans: ['Source Sans Pro', 'sans-serif'],
       },
-      fontSize: {
-        'xs': '0.813rem',    // 13px
-        'sm': '0.938rem',    // 15px
-        'base': '1.063rem',  // 17px
-        'lg': '1.188rem',    // 19px
-        'xl': '1.313rem',    // 21px
-        '2xl': '1.563rem',   // 25px
-        '3xl': '1.938rem',   // 31px
-        '4xl': '2.313rem',   // 37px
+      colors: {
+        background: {
+          DEFAULT: '#ffffff',
+          dark: '#000000',
+          secondary: {
+            light: '#ffffff',
+            dark: '#111111'
+          },
+          card: {
+            light: '#ffffff',
+            dark: '#141414'
+          }
+        },
+        border: {
+          card: {
+            light: '#e5e7eb',
+            dark: 'rgba(255, 255, 255, 0.1)'
+          }
+        }
       },
-      transitionProperty: {
-        'width': 'width'
-      },
+      backdropBlur: {
+        'xs': '2px'
+      }
     },
   },
   plugins: [],

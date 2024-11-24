@@ -12,11 +12,11 @@ import {
 } from 'lucide-react';
 
 const navigation = [
-  { name: 'Command Center', icon: Home, href: '/' },
-  { name: 'Knowledge', icon: Database, href: '/knowledge' },
-  { name: 'Agents', icon: Bot, href: '/agents' },
-  { name: 'Playbooks', icon: BookOpen, href: '/playbooks' },
-  { name: 'Settings', icon: Settings, href: '/settings' },
+  { name: 'Command Center', icon: Home, href: '/dashboard' },
+  { name: 'Knowledge', icon: Database, href: '/dashboard/knowledge' },
+  { name: 'Agents', icon: Bot, href: '/dashboard/agents' },
+  { name: 'Playbooks', icon: BookOpen, href: '/dashboard/playbooks' },
+  { name: 'Settings', icon: Settings, href: '/dashboard/settings' },
 ];
 
 interface SidebarProps {
@@ -29,22 +29,21 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
 
   return (
     <>
-      {/* Mobile Overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm lg:hidden z-40"
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm lg:hidden z-40"
           onClick={toggleSidebar}
         />
       )}
       
       <div 
-        className={`flex h-screen flex-col fixed left-0 top-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out ${
+        className={`flex h-screen flex-col fixed left-0 top-0 bg-background-secondary-light dark:bg-background-secondary-dark border-r border-border-card-light dark:border-border-card-dark transition-all duration-300 ease-in-out ${
           isOpen ? 'w-64 translate-x-0' : 'w-20 -translate-x-full lg:translate-x-0'
         } z-50`}
       >
-        <div className="flex h-16 items-center gap-2 px-6 border-b border-gray-200 dark:border-gray-800 justify-between">
+        <div className="flex h-16 items-center gap-2 px-6 border-b border-border-card-light dark:border-border-card-dark justify-between">
           <div className="flex items-center gap-2">
-            <Layout className="h-6 w-6 text-indigo-600" />
+            <Layout className="h-6 w-6 text-primary-600 dark:text-primary-400" />
             <span className={`text-xl font-semibold transition-opacity duration-300 ${
               isOpen ? 'opacity-100' : 'opacity-0 hidden'
             }`}>
@@ -53,7 +52,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
           </div>
           <button
             onClick={toggleSidebar}
-            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg hidden lg:block"
+            className="p-1 hover:bg-gray-100 dark:hover:bg-background-card-dark rounded-lg hidden lg:block"
           >
             {isOpen ? (
               <ChevronLeft className="h-5 w-5" />
@@ -69,8 +68,8 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-indigo-600 dark:hover:text-indigo-400 group transition-colors ${
-                  location.pathname === item.href ? 'bg-gray-50 dark:bg-gray-800 text-indigo-600 dark:text-indigo-400' : ''
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-background-card-light dark:hover:bg-background-card-dark hover:text-primary-600 dark:hover:text-primary-400 group transition-colors ${
+                  location.pathname === item.href ? 'bg-background-card-light dark:bg-background-card-dark text-primary-600 dark:text-primary-400' : ''
                 }`}
                 title={!isOpen ? item.name : undefined}
                 onClick={() => window.innerWidth < 1024 && toggleSidebar()}

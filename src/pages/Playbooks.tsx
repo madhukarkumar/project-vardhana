@@ -1,6 +1,7 @@
 import React from 'react';
 import { Plus, Search, Filter, Play, Pause, Archive, MoreVertical } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Card } from '../components/ui/Card';
 
 const playbooks = [
   {
@@ -23,7 +24,7 @@ const playbooks = [
   },
   {
     id: 3,
-    name: 'Lead Generation',
+    name: 'Stage 3 Pipeline Generation',
     description: 'B2B lead generation and qualification process',
     status: 'active',
     steps: 6,
@@ -42,9 +43,9 @@ const playbooks = [
 ];
 
 const statusColors = {
-  active: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-  draft: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-  archived: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300',
+  active: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+  draft: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+  archived: 'bg-gray-100 text-gray-800 dark:bg-gray-800/30 dark:text-gray-300',
 };
 
 const statusIcons = {
@@ -56,6 +57,14 @@ const statusIcons = {
 export function Playbooks() {
   const navigate = useNavigate();
 
+  const handleNavigate = (id: number) => {
+    if (id === 3) {
+      navigate('/dashboard/lead-generation');
+    } else {
+      navigate(`/dashboard/playbooks/${id}`);
+    }
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -63,7 +72,7 @@ export function Playbooks() {
           <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Playbooks</h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">Create and manage your marketing automation playbooks</p>
         </div>
-        <button className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors">
+        <button className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-500 transition-colors">
           <Plus className="h-5 w-5" />
           New Playbook
         </button>
@@ -75,10 +84,10 @@ export function Playbooks() {
           <input
             type="text"
             placeholder="Search playbooks..."
-            className="h-10 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 pl-10 pr-4 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="h-10 w-full rounded-lg border border-border-card-light dark:border-border-card-dark bg-white dark:bg-background-card-dark pl-10 pr-4 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
           />
         </div>
-        <button className="inline-flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+        <button className="inline-flex items-center gap-2 rounded-lg border border-border-card-light dark:border-border-card-dark px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-background-card-light dark:hover:bg-background-card-dark transition-colors">
           <Filter className="h-4 w-4" />
           Filter
         </button>
@@ -88,58 +97,60 @@ export function Playbooks() {
         {playbooks.map((playbook) => {
           const StatusIcon = statusIcons[playbook.status];
           return (
-            <div
+            <Card
               key={playbook.id}
-              className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 relative group shadow-lg dark:shadow-gray-900/50 hover:shadow-xl transition-all"
+              className="group relative transition-all hover:border-primary-300 dark:hover:border-primary-600"
             >
-              <div className="absolute right-4 top-4">
-                <button 
-                  onClick={() => navigate(`/playbooks/${playbook.id}`)}
-                  className="p-1 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
-                >
-                  <MoreVertical className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-                </button>
-              </div>
-              
-              <div className="flex items-center justify-between mb-4">
-                <Link 
-                  to={`/playbooks/${playbook.id}`}
-                  className="text-lg font-semibold text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400"
-                >
-                  {playbook.name}
-                </Link>
-                <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[playbook.status]}`}>
-                  {playbook.status.charAt(0).toUpperCase() + playbook.status.slice(1)}
-                </span>
-              </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{playbook.description}</p>
-              
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Progress</span>
-                <span className="text-sm font-medium text-gray-900 dark:text-white">
-                  {playbook.completedSteps} of {playbook.steps} steps
-                </span>
-              </div>
-              <div className="h-2 w-full rounded-full bg-gray-100 dark:bg-gray-700 mb-4">
-                <div
-                  className="h-2 rounded-full bg-indigo-600"
-                  style={{ width: `${(playbook.completedSteps / playbook.steps) * 100}%` }}
-                />
-              </div>
-
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                  <StatusIcon className="h-4 w-4" />
-                  <span>Last run: {playbook.lastRun}</span>
+              <Card.Body>
+                <div className="absolute right-4 top-4">
+                  <button 
+                    onClick={() => handleNavigate(playbook.id)}
+                    className="p-1 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all"
+                  >
+                    <MoreVertical className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                  </button>
                 </div>
-                <Link 
-                  to={`/playbooks/${playbook.id}`}
-                  className="font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300"
-                >
-                  View Details →
-                </Link>
-              </div>
-            </div>
+                
+                <div className="flex items-center justify-between mb-4">
+                  <Link 
+                    to={playbook.id === 3 ? '/dashboard/lead-generation' : `/dashboard/playbooks/${playbook.id}`}
+                    className="text-lg font-semibold text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400"
+                  >
+                    {playbook.name}
+                  </Link>
+                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[playbook.status]}`}>
+                    {playbook.status.charAt(0).toUpperCase() + playbook.status.slice(1)}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{playbook.description}</p>
+                
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Progress</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    {playbook.completedSteps} of {playbook.steps} steps
+                  </span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-gray-100 dark:bg-gray-700/50 mb-4">
+                  <div
+                    className="h-2 rounded-full bg-primary-600"
+                    style={{ width: `${(playbook.completedSteps / playbook.steps) * 100}%` }}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                    <StatusIcon className="h-4 w-4" />
+                    <span>Last run: {playbook.lastRun}</span>
+                  </div>
+                  <Link 
+                    to={playbook.id === 3 ? '/dashboard/lead-generation' : `/dashboard/playbooks/${playbook.id}`}
+                    className="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300"
+                  >
+                    View Details →
+                  </Link>
+                </div>
+              </Card.Body>
+            </Card>
           );
         })}
       </div>
