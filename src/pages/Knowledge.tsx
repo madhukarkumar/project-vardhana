@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Package, Building2, Users2, LineChart, ArrowRight, Plus, X, Send, Bot, MessageSquare, Search } from 'lucide-react';
+import { Package, Building2, Users2, LineChart, ArrowRight, Plus, X, Send, Bot, MessageSquare, Search, Upload } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 
 const cards = [
@@ -48,11 +48,71 @@ const messages = [
 export function Knowledge() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [newMessage, setNewMessage] = useState('');
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [url, setUrl] = useState('');
+  const [addType, setAddType] = useState<'file' | 'url'>('file');
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
     setNewMessage('');
+  };
+
+  const handleDrag = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setSelectedFile(e.dataTransfer.files[0]);
+    }
+  }, []);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
+  const handleAdd = async () => {
+    if (!selectedCategory) return;
+    if (addType === 'file' && !selectedFile) return;
+    if (addType === 'url' && !url.trim()) return;
+    
+    if (addType === 'file') {
+      // TODO: Implement file upload logic here
+      console.log('Uploading file:', selectedFile, 'for category:', selectedCategory);
+    } else {
+      // TODO: Implement URL addition logic here
+      console.log('Adding URL:', url, 'for category:', selectedCategory);
+    }
+    
+    // Reset and close modal after upload
+    setSelectedFile(null);
+    setUrl('');
+    setSelectedCategory('');
+    setIsUploadModalOpen(false);
+  };
+
+  const resetModal = () => {
+    setSelectedFile(null);
+    setUrl('');
+    setAddType('file');
+    setSelectedCategory('');
+    setIsUploadModalOpen(false);
   };
 
   return (
@@ -63,7 +123,10 @@ export function Knowledge() {
             <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Knowledge Base</h1>
             <p className="mt-1 text-gray-600 dark:text-gray-400">Manage and explore your organization's knowledge</p>
           </div>
-          <button className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-500 transition-colors">
+          <button 
+            onClick={() => setIsUploadModalOpen(true)}
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors"
+          >
             <Plus className="h-5 w-5" />
             Add Knowledge
           </button>
@@ -191,6 +254,156 @@ export function Knowledge() {
           </form>
         </div>
       </div>
+
+      {/* Add Knowledge Modal */}
+      {isUploadModalOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={resetModal} />
+            
+            <div className="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-900 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+              <div className="absolute right-0 top-0 pr-4 pt-4">
+                <button
+                  type="button"
+                  className="rounded-md text-gray-400 hover:text-gray-500"
+                  onClick={resetModal}
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              
+              <div className="sm:flex sm:items-start">
+                <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                  <h3 className="text-lg font-semibold leading-6 text-gray-900 dark:text-white mb-4">
+                    Add Knowledge
+                  </h3>
+
+                  {/* Category Selection */}
+                  <div className="mb-6">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Select Category
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {cards.map((card) => (
+                        <button
+                          key={card.title}
+                          onClick={() => setSelectedCategory(card.title)}
+                          className={`flex items-center gap-3 p-3 rounded-lg border ${
+                            selectedCategory === card.title
+                              ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20'
+                              : 'border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-700'
+                          }`}
+                        >
+                          <div className={`rounded-lg ${card.color} p-2`}>
+                            <card.icon className="h-5 w-5" />
+                          </div>
+                          <div className="text-left">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white">
+                              {card.title}
+                            </p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {selectedCategory && (
+                    <>
+                      <div className="flex gap-4 mb-6">
+                        <button
+                          onClick={() => setAddType('file')}
+                          className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium ${
+                            addType === 'file'
+                              ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
+                              : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
+                          }`}
+                        >
+                          Upload File
+                        </button>
+                        <button
+                          onClick={() => setAddType('url')}
+                          className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium ${
+                            addType === 'url'
+                              ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
+                              : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
+                          }`}
+                        >
+                          Add URL
+                        </button>
+                      </div>
+                      
+                      {addType === 'file' ? (
+                        <div
+                          onDragEnter={handleDrag}
+                          onDragLeave={handleDrag}
+                          onDragOver={handleDrag}
+                          onDrop={handleDrop}
+                          className={`mt-2 flex justify-center rounded-lg border border-dashed border-gray-300 dark:border-gray-700 px-6 py-10 ${
+                            dragActive ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20' : ''
+                          }`}
+                        >
+                          <div className="text-center">
+                            <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                            <div className="mt-4 flex text-sm leading-6 text-gray-600 dark:text-gray-400">
+                              <label
+                                htmlFor="file-upload"
+                                className="relative cursor-pointer rounded-md font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500"
+                              >
+                                <span>Upload a file</span>
+                                <input
+                                  id="file-upload"
+                                  name="file-upload"
+                                  type="file"
+                                  className="sr-only"
+                                  onChange={handleFileSelect}
+                                />
+                              </label>
+                              <p className="pl-1">or drag and drop</p>
+                            </div>
+                            {selectedFile && (
+                              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                Selected: {selectedFile.name}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="mt-2">
+                          <input
+                            type="url"
+                            placeholder="Enter URL"
+                            value={url}
+                            onChange={(e) => setUrl(e.target.value)}
+                            className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          />
+                        </div>
+                      )}
+                    </>
+                  )}
+                  
+                  <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                    <button
+                      type="button"
+                      className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={handleAdd}
+                      disabled={!selectedCategory || (addType === 'file' && !selectedFile) || (addType === 'url' && !url.trim())}
+                    >
+                      Add
+                    </button>
+                    <button
+                      type="button"
+                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-gray-800 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 sm:mt-0 sm:w-auto"
+                      onClick={resetModal}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -40,15 +40,14 @@ export function Landing() {
           </div>
         </nav>
 
-        {/* Rest of the landing page content remains the same */}
         <div className="py-20 text-center">
           <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-6">
-            AI-Powered Growth
-            <br />
-            <span className="text-indigo-600 dark:text-indigo-400">for Your Business</span>
+          <span className="pointer-events-none z-10 whitespace-pre-wrap bg-gradient-to-b from-[#ffd319] via-[#ff2975] to-[#8c1eff] bg-clip-text text-center text-7xl font-bold leading-none tracking-tighter text-transparent">
+            Meet your CMO Co-Agent
+          </span>
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 mb-12 max-w-2xl mx-auto">
-            Automate your marketing workflows, generate leads, and scale your business with AI-driven insights and automation.
+          A powerful growth operating system with three simple constructs to drive revenue growth.
           </p>
           <div className="flex items-center justify-center gap-4">
             <Link
