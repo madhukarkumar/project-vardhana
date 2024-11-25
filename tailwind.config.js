@@ -10,14 +10,14 @@ export default {
       colors: {
         background: {
           DEFAULT: '#ffffff',
-          dark: '#000000',
+          dark: '#141414',
           secondary: {
             light: '#ffffff',
             dark: '#111111'
           },
           card: {
             light: '#ffffff',
-            dark: '#141414'
+            dark: '#000000'
           }
         },
         border: {
