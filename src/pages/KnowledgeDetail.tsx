@@ -1,12 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Search, Bot, MessageSquare, FileText, Link as LinkIcon, ArrowUpRight, X, Send, Upload, Plus } from 'lucide-react';
-
-const messages = [
-  { role: 'assistant', content: "Welcome! How can I help you with the product documentation?" },
-  { role: 'user', content: 'Can you explain the technical architecture?' },
-  { role: 'assistant', content: 'The system uses a microservices architecture with the following key components...' }
-];
 
 const cards = [
   {
@@ -58,17 +52,85 @@ const getCardIcon = (type: string) => {
 
 export function KnowledgeDetail() {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [sessionId, setSessionId] = useState<string>('');
   const [newMessage, setNewMessage] = useState('');
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [url, setUrl] = useState('');
   const [addType, setAddType] = useState<'file' | 'url'>('file');
+  const [messages, setMessages] = useState([
+    { role: 'assistant', content: "Welcome! How can I help you with the product documentation?" }
+  ]);
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  // Generate new session ID when chat is opened
+  useEffect(() => {
+    if (isChatOpen && !sessionId) {
+      const newSessionId = crypto.randomUUID();
+      setSessionId(newSessionId);
+    }
+  }, [isChatOpen]);
+
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
+
+    // Add user message to chat
+    const userMessage = { role: 'user', content: newMessage };
+    setMessages(prev => [...prev, userMessage]);
     setNewMessage('');
+
+    try {
+      // Log request payload
+      const payload = { 
+        chatInput: newMessage,
+        sessionId: sessionId
+      };
+      console.log('Sending request to webhook:', {
+        url: 'https://madhukar.app.n8n.cloud/webhook/82e3f52d-cae2-4f59-96ac-b64025e8b75d/chat',
+        payload
+      });
+
+      // Send message to webhook with sessionId
+      const response = await fetch('https://madhukar.app.n8n.cloud/webhook/82e3f52d-cae2-4f59-96ac-b64025e8b75d/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      // Log response status
+      console.log('Webhook response status:', response.status);
+
+      if (!response.ok) {
+        throw new Error(`Failed to get response from chatbot: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      // Log response data
+      console.log('Webhook response data:', data);
+      
+      // Add assistant's response to chat
+      const assistantMessage = { 
+        role: 'assistant', 
+        content: data.output || data.response || data.message || data.answer || 'Sorry, I could not process your request.' 
+      };
+      console.log('Adding assistant message to chat:', assistantMessage);
+      setMessages(prev => [...prev, assistantMessage]);
+    } catch (error) {
+      // Log detailed error
+      console.error('Error in handleSendMessage:', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      // Add error message to chat
+      const errorMessage = { 
+        role: 'assistant', 
+        content: 'Sorry, I encountered an error while processing your message.' 
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    }
   };
 
   const handleDrag = useCallback((e: React.DragEvent) => {
@@ -120,6 +182,13 @@ export function KnowledgeDetail() {
     setUrl('');
     setAddType('file');
     setIsUploadModalOpen(false);
+  };
+
+  // Reset session when chat is closed
+  const handleCloseChat = () => {
+    setIsChatOpen(false);
+    setSessionId('');
+    setMessages([{ role: 'assistant', content: "Welcome! How can I help you with the product documentation?" }]);
   };
 
   return (
@@ -247,7 +316,7 @@ export function KnowledgeDetail() {
               </div>
             </div>
             <button
-              onClick={() => setIsChatOpen(false)}
+              onClick={handleCloseChat}
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
