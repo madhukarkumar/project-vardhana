@@ -1,3 +1,3 @@
 # project-vardhana
 
-[Edit in StackBlitz next generation editor ⚡️](https://stackblitz.com/~/github.com/madhukarkumar/project-vardhana)
+Main code base for Project Vardhana
