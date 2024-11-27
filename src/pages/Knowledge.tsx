@@ -1,7 +1,7 @@
-import React, { useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Package, Building2, Users2, LineChart, ArrowRight, Plus, X, Send, Bot, MessageSquare, Search, Upload } from 'lucide-react';
 import { Card } from '../components/ui/Card';
+import ReactMarkdown from 'react-markdown';
 
 const cards = [
   {
@@ -10,8 +10,7 @@ const cards = [
     icon: Package,
     stats: { total: '156 entries', updated: 'Updated 2h ago' },
     color: 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400',
-    span: 'col-span-2',
-    link: '/dashboard/knowledge/product'
+    span: 'col-span-2'
   },
   {
     title: 'Companies',
@@ -39,15 +38,29 @@ const cards = [
   }
 ];
 
-const messages = [
-  { role: 'assistant', content: "Welcome! How can I help you with the knowledge base?" },
-  { role: 'user', content: 'Can you explain the technical architecture?' },
-  { role: 'assistant', content: 'The system uses a microservices architecture with the following key components...' }
-];
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+  metadata?: {
+    source?: string;
+    confidence?: string;
+  };
+}
 
 export function Knowledge() {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [sessionId, setSessionId] = useState<string>('');
   const [newMessage, setNewMessage] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [streamingMessage, setStreamingMessage] = useState('');
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [messages, setMessages] = useState<Message[]>(() => {
+    const savedMessages = localStorage.getItem('chatMessages');
+    return savedMessages ? JSON.parse(savedMessages) : [
+      { role: 'assistant', content: "Welcome! How can I help you with the knowledge base?" }
+    ];
+  });
+
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -55,10 +68,125 @@ export function Knowledge() {
   const [addType, setAddType] = useState<'file' | 'url'>('file');
   const [selectedCategory, setSelectedCategory] = useState('');
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  // Save messages to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('chatMessages', JSON.stringify(messages));
+  }, [messages]);
+
+  // Load session ID from localStorage if exists
+  useEffect(() => {
+    const savedSessionId = localStorage.getItem('chatSessionId');
+    if (savedSessionId) {
+      setSessionId(savedSessionId);
+    }
+  }, []);
+
+  // Generate new session ID when chat is opened and no session exists
+  useEffect(() => {
+    if (!sessionId) {
+      const newSessionId = crypto.randomUUID();
+      setSessionId(newSessionId);
+      localStorage.setItem('chatSessionId', newSessionId);
+    }
+  }, [sessionId]);
+
+  const simulateStreaming = (text: string) => {
+    setIsStreaming(true);
+    const words = text.split(' ');
+    let currentIndex = 0;
+
+    const streamInterval = setInterval(() => {
+      if (currentIndex < words.length) {
+        setStreamingMessage(prev => prev + (currentIndex === 0 ? '' : ' ') + words[currentIndex]);
+        currentIndex++;
+      } else {
+        clearInterval(streamInterval);
+        setIsStreaming(false);
+      }
+    }, 50);
+  };
+
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
+
+    // Add user message to chat
+    const userMessage: Message = { role: 'user', content: newMessage };
+    setMessages(prev => [...prev, userMessage]);
     setNewMessage('');
+    setIsProcessing(true);
+    setStreamingMessage('');
+
+    try {
+      const payload = { 
+        chatInput: newMessage,
+        sessionId: sessionId
+      };
+      console.log('Sending request to webhook:', {
+        url: 'https://madhukar.app.n8n.cloud/webhook/82e3f52d-cae2-4f59-96ac-b64025e8b75d/chat',
+        payload
+      });
+
+      const response = await fetch('https://madhukar.app.n8n.cloud/webhook/82e3f52d-cae2-4f59-96ac-b64025e8b75d/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      console.log('Webhook response status:', response.status);
+
+      if (!response.ok) {
+        throw new Error(`Failed to get response from chatbot: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log('Webhook response data:', data);
+      
+      // Format the response content
+      let content = '';
+      if (data.output) {
+        const parts = [];
+        if (data.source) parts.push(`**Source:** ${data.source}`);
+        if (data.output) parts.push(`**Answer:** ${data.output}`);
+        if (data.confidence) parts.push(`**Confidence:** ${data.confidence}`);
+        content = parts.join('\n\n');
+      } else {
+        content = 'Sorry, I could not process your request.';
+      }
+
+      // Create assistant message object
+      const assistantMessage: Message = {
+        role: 'assistant',
+        content,
+        metadata: {
+          source: data.source,
+          confidence: data.confidence
+        }
+      };
+
+      // Start streaming only after we have the full response
+      simulateStreaming(content);
+      
+      // Add message to chat history after streaming completes
+      setTimeout(() => {
+        setMessages(prev => [...prev, assistantMessage]);
+      }, (content.split(' ').length * 50) + 100); // Wait for streaming to complete
+      
+    } catch (error) {
+      console.error('Error in handleSendMessage:', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      const errorMessage: Message = { 
+        role: 'assistant', 
+        content: 'Sorry, I encountered an error while processing your message.' 
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleDrag = useCallback((e: React.DragEvent) => {
@@ -115,6 +243,10 @@ export function Knowledge() {
     setIsUploadModalOpen(false);
   };
 
+  const handleCloseChat = () => {
+    setIsChatOpen(false);
+  };
+
   return (
     <div className="relative">
       <div className={`transition-all duration-300 ${isChatOpen ? 'mr-96' : 'mr-0'}`}>
@@ -137,7 +269,7 @@ export function Knowledge() {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              placeholder="Search documentation..."
+              placeholder="Search Knowledge base..."
               className="h-10 w-full rounded-lg border border-border-card-light dark:border-border-card-dark bg-white dark:bg-background-card-dark pl-10 pr-4 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
             />
           </div>
@@ -145,9 +277,8 @@ export function Knowledge() {
 
         <div className="grid grid-cols-3 gap-6">
           {cards.map((card) => (
-            <Link
+            <div
               key={card.title}
-              to={card.link || '#'}
               className={`${card.span} group`}
             >
               <Card className="h-full transition-all hover:border-primary-300 dark:hover:border-primary-600">
@@ -173,7 +304,7 @@ export function Knowledge() {
                   </div>
                 </Card.Body>
               </Card>
-            </Link>
+            </div>
           ))}
         </div>
       </div>
@@ -182,7 +313,7 @@ export function Knowledge() {
       {!isChatOpen && (
         <button
           onClick={() => setIsChatOpen(true)}
-          className="fixed right-6 bottom-6 p-4 rounded-full bg-primary-600 text-white shadow-lg hover:bg-primary-500 transition-colors"
+          className="fixed right-6 bottom-6 p-4 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-500 transition-colors"
         >
           <MessageSquare className="h-6 w-6" />
         </button>
@@ -202,12 +333,12 @@ export function Knowledge() {
                 <Bot className="h-5 w-5 text-primary-600 dark:text-primary-400" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white">Documentation Assistant</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">AI-powered help</p>
+                <h3 className="font-semibold text-gray-900 dark:text-white">Knowledge Agent</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Chat with your knowledge base</p>
               </div>
             </div>
             <button
-              onClick={() => setIsChatOpen(false)}
+              onClick={handleCloseChat}
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
@@ -224,14 +355,43 @@ export function Knowledge() {
                 <div
                   className={`max-w-[80%] rounded-lg p-3 ${
                     message.role === 'user'
-                      ? 'bg-primary-600 text-white'
+                      ? 'bg-indigo-600 text-white'
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
                   }`}
                 >
-                  <p className="text-sm">{message.content}</p>
+                  <ReactMarkdown className="text-sm prose dark:prose-invert max-w-none">
+                    {message.content}
+                  </ReactMarkdown>
+                  {message.metadata?.confidence && (
+                    <div className={`mt-2 text-xs ${
+                      message.role === 'user' ? 'text-white/70' : 'text-gray-500 dark:text-gray-400'
+                    }`}>
+                      Confidence: {message.metadata.confidence}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
+            {isProcessing && (
+              <div className="flex justify-start">
+                <div className="max-w-[80%] rounded-lg p-3 bg-gray-100 dark:bg-gray-700">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                  </div>
+                </div>
+              </div>
+            )}
+            {isStreaming && !isProcessing && (
+              <div className="flex justify-start">
+                <div className="max-w-[80%] rounded-lg p-3 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white">
+                  <ReactMarkdown className="text-sm prose dark:prose-invert max-w-none">
+                    {streamingMessage}
+                  </ReactMarkdown>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Chat Input */}
@@ -241,7 +401,7 @@ export function Knowledge() {
                 type="text"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Ask about the documentation..."
+                placeholder="Ask about the knowledge base..."
                 className="flex-1 rounded-lg border border-border-card-light dark:border-border-card-dark bg-white dark:bg-background-card-dark px-4 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
               />
               <button

@@ -11,7 +11,6 @@ import { PlaybookDetails } from './pages/PlaybookDetails';
 import { Knowledge } from './pages/Knowledge';
 import { Settings } from './pages/Settings';
 import { LeadGenerationDetails } from './pages/LeadGenerationDetails';
-import { KnowledgeDetail } from './pages/KnowledgeDetail';
 import { Landing } from './pages/Landing';
 
 export function App() {
@@ -40,7 +39,6 @@ export function App() {
                   <Route path="playbooks" element={<Playbooks />} />
                   <Route path="playbooks/:id" element={<PlaybookDetails />} />
                   <Route path="knowledge" element={<Knowledge />} />
-                  <Route path="knowledge/product" element={<KnowledgeDetail />} />
                   <Route path="settings" element={<Settings />} />
                   <Route path="lead-generation" element={<LeadGenerationDetails />} />
                 </Routes>
