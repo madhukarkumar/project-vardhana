@@ -76,12 +76,15 @@ export const Home = () => {
           <div className="flex items-center space-x-4">
             <ThemeToggle />
             <button 
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/login')}
               className="px-6 py-2 rounded-full border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-all duration-300"
             >
               Login
             </button>
-            <button className="px-6 py-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white transition-all duration-300">
+            <button 
+              onClick={() => navigate('/signup')}
+              className="px-6 py-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white transition-all duration-300"
+            >
               Sign Up
             </button>
           </div>
