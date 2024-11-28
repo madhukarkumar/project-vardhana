@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Sun, Moon } from 'lucide-react';
+import { HeroChat } from '../components/HeroChat';
 
 const ThemeToggle = () => {
   const [isDark, setIsDark] = useState(() => {
@@ -71,7 +72,7 @@ export const Home = () => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-black/50 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <div className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-600">
-            Project Vardhana
+          Robynn 🐦‍⬛ 
           </div>
           <div className="flex items-center space-x-4">
             <ThemeToggle />
@@ -104,48 +105,22 @@ export const Home = () => {
           />
 
           {/* Main content */}
-          <motion.div
-            style={{
-              opacity: useTransform(scrollYProgress, [0, 0.2], [1, 0]),
-              y: useTransform(scrollYProgress, [0, 0.2], [0, -100])
-            }}
-            className="relative z-10 w-full max-w-4xl mx-auto"
-          >
-            <GlowingBorder>
-              <div className="space-y-6">
-                <h2 className="text-2xl text-gray-600 dark:text-gray-400 font-light">
-                 Tell your co-CMO what you want it to do...
-                </h2>
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="What would you like me to do? Start typing or choose an example..."
-                    className="w-full bg-white dark:bg-gray-950 text-gray-700 dark:text-gray-300 p-4 rounded-lg border border-gray-300 dark:border-gray-800 focus:border-blue-500 dark:focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-orange-500 transition-colors"
-                  />
-                  <div className="absolute right-4 top-4">
-                    <button className="px-4 py-1 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors">
-                      Go
-                    </button>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <button className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center gap-2">
-                  🌐 Optimze my website for SEO
-                  </button>
-                  <button className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center gap-2">
-                  🔎 Research my competitors
-                  </button>
-                  <button className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center gap-2">
-                  💰 Build stage 2 pipeline for my product
-                  </button>
-                  <button className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center gap-2">
-                  📕 Talk to my company knowledgebase
-                  </button>
-                </div>
+          <div className="relative z-10 w-full max-w-4xl mx-auto space-y-8">
+            {/* Headline and Subhead */}
+            <div className="text-center space-y-4">
+              <h1 className="text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 pb-4">
+                Growth. Engineered.
+              </h1>
+              <p className="text-xl text-gray-600 dark:text-gray-400 pb-20">
+                Product-led growth without the mindless marketing mechanics with
+                <br />
+                your very own growth engine that builds pipeline and revenue not just MQLs.
+              </p>
+            </div>
 
-              </div>
-            </GlowingBorder>
-          </motion.div>
+            {/* Hero Chat Component */}
+            <HeroChat scrollYProgress={useTransform(scrollYProgress, [0, 0.2], [1, 0])} />
+          </div>
         </section>
 
         {/* Features Grid */}
