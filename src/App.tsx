@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Header } from './components/layout/Header';
 import { Sidebar } from './components/layout/Sidebar';
@@ -11,7 +11,8 @@ import { PlaybookDetails } from './pages/PlaybookDetails';
 import { Knowledge } from './pages/Knowledge';
 import { Settings } from './pages/Settings';
 import { LeadGenerationDetails } from './pages/LeadGenerationDetails';
-import { Landing } from './pages/Landing';
+import { Home } from './pages/Home';
+import { Toaster } from 'react-hot-toast';
 
 export function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
@@ -19,7 +20,7 @@ export function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Landing />} />
+      <Route path="/" element={<Home />} />
       <Route
         path="/dashboard/*"
         element={
