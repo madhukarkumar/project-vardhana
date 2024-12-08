@@ -1,8 +1,9 @@
-import { useEffect, useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Sun, Moon } from 'lucide-react';
 import { HeroChat } from '../components/HeroChat';
+import { useAuth } from '../hooks/useAuth';
 
 const ThemeToggle = () => {
   const [isDark, setIsDark] = useState(() => {
@@ -57,6 +58,7 @@ const GlowingBorder = ({ children }: { children: React.ReactNode }) => {
 
 export const Home = () => {
   const navigate = useNavigate();
+  const { session, signOut } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -76,18 +78,37 @@ export const Home = () => {
           </div>
           <div className="flex items-center space-x-4">
             <ThemeToggle />
-            <button 
-              onClick={() => navigate('/login')}
-              className="px-6 py-2 rounded-full border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-all duration-300"
-            >
-              Login
-            </button>
-            <button 
-              onClick={() => navigate('/signup')}
-              className="px-6 py-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white transition-all duration-300"
-            >
-              Sign Up
-            </button>
+            {session ? (
+              <>
+                <button 
+                  onClick={() => navigate('/dashboard')}
+                  className="px-6 py-2 rounded-full border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-all duration-300"
+                >
+                  Dashboard
+                </button>
+                <button 
+                  onClick={signOut}
+                  className="px-6 py-2 rounded-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white transition-all duration-300"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <button 
+                  onClick={() => navigate('/login')}
+                  className="px-6 py-2 rounded-full border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-all duration-300"
+                >
+                  Login
+                </button>
+                <button 
+                  onClick={() => navigate('/signup')}
+                  className="px-6 py-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white transition-all duration-300"
+                >
+                  Sign Up
+                </button>
+              </>
+            )}
           </div>
         </div>
       </header>

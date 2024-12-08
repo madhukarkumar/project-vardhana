@@ -17,6 +17,8 @@ import { Settings } from './pages/Settings';
 import { LeadGenerationDetails } from './pages/LeadGenerationDetails';
 import { Home } from './pages/Home';
 import { Toaster } from 'react-hot-toast';
+import NewHome from './pages/new-home';
+import { AuthCallback } from './pages/AuthCallback';
 
 export function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
@@ -31,16 +33,46 @@ export function App() {
 }
 
 function AppContent({ isSidebarOpen, toggleSidebar }: { isSidebarOpen: boolean; toggleSidebar: () => void }) {
-  const { user } = useAuth();
+  const { session } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Check if we have completed the initial auth check
+    supabase.auth.getSession().then(() => {
+      console.log("Initial auth check completed");
+      setIsLoading(false);
+    });
+  }, []);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  // Public routes that don't require authentication
+  const publicRoutes = ['/', '/new-home', '/login', '/signup'];
+  const isPublicRoute = (path: string) => publicRoutes.includes(path);
 
   return (
     <Routes>
+      {/* Public Routes */}
       <Route path="/" element={<Home />} />
-      <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
-      <Route path="/signup" element={!user ? <Login isSignUp={true} /> : <Navigate to="/dashboard" />} />
+      <Route path="/new-home" element={<NewHome />} />
+      <Route path="/auth/callback" element={<AuthCallback />} />
+      <Route 
+        path="/login" 
+        element={
+          !session ? <Login /> : <Navigate to="/dashboard" replace />
+        } 
+      />
+      <Route 
+        path="/signup" 
+        element={
+          !session ? <Login isSignUp={true} /> : <Navigate to="/dashboard" replace />
+        } 
+      />
       
-      {/* Protected Routes */}
-      {user ? (
+      {/* Protected Routes - Only accessible when logged in */}
+      {session ? (
         <Route
           path="/*"
           element={
@@ -54,15 +86,15 @@ function AppContent({ isSidebarOpen, toggleSidebar }: { isSidebarOpen: boolean; 
                 <Header toggleSidebar={toggleSidebar} />
                 <main className="flex-1 px-4 sm:px-6 lg:px-8">
                   <Routes>
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/agents" element={<Agents />} />
-                    <Route path="/agents/:id" element={<AgentDetails />} />
-                    <Route path="/playbooks" element={<Playbooks />} />
-                    <Route path="/playbooks/:id" element={<PlaybookDetails />} />
-                    <Route path="/knowledge" element={<Knowledge />} />
-                    <Route path="/settings" element={<Settings />} />
-                    <Route path="/lead-generation/:id" element={<LeadGenerationDetails />} />
-                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                    <Route path="dashboard" element={<Dashboard />} />
+                    <Route path="agents" element={<Agents />} />
+                    <Route path="agents/:id" element={<AgentDetails />} />
+                    <Route path="playbooks" element={<Playbooks />} />
+                    <Route path="playbooks/:id" element={<PlaybookDetails />} />
+                    <Route path="knowledge" element={<Knowledge />} />
+                    <Route path="settings" element={<Settings />} />
+                    <Route path="lead-generation/:id" element={<LeadGenerationDetails />} />
+                    <Route path="*" element={<Navigate to="../dashboard" replace />} />
                   </Routes>
                 </main>
                 <Footer />
@@ -71,7 +103,7 @@ function AppContent({ isSidebarOpen, toggleSidebar }: { isSidebarOpen: boolean; 
           }
         />
       ) : (
-        <Route path="/*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       )}
     </Routes>
   );

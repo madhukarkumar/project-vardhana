@@ -13,10 +13,10 @@ import {
 
 const navigation = [
   { name: 'Command Center', icon: Home, href: '/dashboard' },
-  { name: 'Knowledge', icon: Database, href: '/dashboard/knowledge' },
-  { name: 'Agents', icon: Bot, href: '/dashboard/agents' },
-  { name: 'Playbooks', icon: BookOpen, href: '/dashboard/playbooks' },
-  { name: 'Settings', icon: Settings, href: '/dashboard/settings' },
+  { name: 'Knowledge', icon: Database, href: '/knowledge' },
+  { name: 'Agents', icon: Bot, href: '/agents' },
+  { name: 'Playbooks', icon: BookOpen, href: '/playbooks' },
+  { name: 'Settings', icon: Settings, href: '/settings' },
 ];
 
 interface SidebarProps {
