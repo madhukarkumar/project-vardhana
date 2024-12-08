@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { SessionContextProvider } from '@supabase/auth-helpers-react';
 import { supabase } from './utils/supabaseClient';
 import { useAuth } from './hooks/useAuth';
@@ -35,6 +35,7 @@ export function App() {
 function AppContent({ isSidebarOpen, toggleSidebar }: { isSidebarOpen: boolean; toggleSidebar: () => void }) {
   const { session } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Check if we have completed the initial auth check
@@ -43,6 +44,11 @@ function AppContent({ isSidebarOpen, toggleSidebar }: { isSidebarOpen: boolean; 
       setIsLoading(false);
     });
   }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -83,7 +89,7 @@ function AppContent({ isSidebarOpen, toggleSidebar }: { isSidebarOpen: boolean; 
                   isSidebarOpen ? 'lg:pl-64' : 'lg:pl-20'
                 }`}
               >
-                <Header toggleSidebar={toggleSidebar} />
+                <Header toggleSidebar={toggleSidebar} onLogout={handleLogout} />
                 <main className="flex-1 px-4 sm:px-6 lg:px-8">
                   <Routes>
                     <Route path="dashboard" element={<Dashboard />} />

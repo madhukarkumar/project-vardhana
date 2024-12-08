@@ -5,9 +5,10 @@ import { useTheme } from '../../hooks/useTheme';
 
 interface HeaderProps {
   toggleSidebar: () => void;
+  onLogout: () => void;
 }
 
-export function Header({ toggleSidebar }: HeaderProps) {
+export function Header({ toggleSidebar, onLogout }: HeaderProps) {
   const { theme, toggleTheme } = useTheme();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -77,13 +78,13 @@ export function Header({ toggleSidebar }: HeaderProps) {
 
           {isProfileOpen && (
             <div className="absolute right-0 mt-2 w-48 rounded-lg bg-background-card-light dark:bg-background-card-dark shadow-card dark:shadow-card-dark border border-border-card-light dark:border-border-card-dark py-1">
-              <Link
-                to="/"
-                className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-background-secondary-light dark:hover:bg-background-secondary-dark"
+              <button
+                onClick={onLogout}
+                className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-background-secondary-light dark:hover:bg-background-secondary-dark w-full"
               >
                 <LogOut className="h-4 w-4" />
                 Logout
-              </Link>
+              </button>
             </div>
           )}
         </div>
