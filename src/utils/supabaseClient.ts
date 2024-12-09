@@ -9,9 +9,10 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
+    flowType: 'pkce',
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false,
+    detectSessionInUrl: true,
     storage: {
       getItem: (key) => {
         try {
@@ -35,7 +36,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
         } catch (error) {
           console.error('Error removing from localStorage:', error)
         }
-      },
+      }
     },
   },
 })

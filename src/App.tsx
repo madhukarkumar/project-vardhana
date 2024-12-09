@@ -55,7 +55,7 @@ function AppContent({ isSidebarOpen, toggleSidebar }: { isSidebarOpen: boolean; 
   }
 
   // Public routes that don't require authentication
-  const publicRoutes = ['/', '/new-home', '/login', '/signup'];
+  const publicRoutes = ['/', '/new-home', '/login', '/signup', '/auth/callback'];
   const isPublicRoute = (path: string) => publicRoutes.includes(path);
 
   return (

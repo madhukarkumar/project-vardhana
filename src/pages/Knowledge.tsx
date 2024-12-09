@@ -123,11 +123,11 @@ export function Knowledge() {
         sessionId: sessionId
       };
       console.log('Sending request to webhook:', {
-        url: 'https://madhukar.app.n8n.cloud/webhook/82e3f52d-cae2-4f59-96ac-b64025e8b75d/chat',
+        url: 'https://madhukar.app.n8n.cloud/webhook/a3e23432-a46d-4de8-a271-709108bc43f0/chat',
         payload
       });
 
-      const response = await fetch('https://madhukar.app.n8n.cloud/webhook/82e3f52d-cae2-4f59-96ac-b64025e8b75d/chat', {
+      const response = await fetch('https://madhukar.app.n8n.cloud/webhook/a3e23432-a46d-4de8-a271-709108bc43f0/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
