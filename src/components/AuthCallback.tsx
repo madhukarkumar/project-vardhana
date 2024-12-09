@@ -6,14 +6,30 @@ export const AuthCallback = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    // Check if we have a session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate('/dashboard', { replace: true })
-      } else {
+    const handleCallback = async () => {
+      try {
+        const { data, error } = await supabase.auth.getSession()
+        
+        if (error) {
+          console.error('Auth error:', error)
+          navigate('/login', { replace: true })
+          return
+        }
+
+        if (data?.session) {
+          console.log('Session found, redirecting to dashboard')
+          navigate('/dashboard', { replace: true })
+        } else {
+          console.log('No session found, redirecting to login')
+          navigate('/login', { replace: true })
+        }
+      } catch (error) {
+        console.error('Callback error:', error)
         navigate('/login', { replace: true })
       }
-    })
+    }
+
+    handleCallback()
   }, [navigate])
 
   return (
