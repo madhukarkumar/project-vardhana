@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { SessionContextProvider } from '@supabase/auth-helpers-react';
 import { supabase } from './utils/supabaseClient';
 import { useAuth } from './hooks/useAuth';
@@ -15,9 +15,9 @@ import { PlaybookDetails } from './pages/PlaybookDetails';
 import { Knowledge } from './pages/Knowledge';
 import { Settings } from './pages/Settings';
 import { LeadGenerationDetails } from './pages/LeadGenerationDetails';
+import { OldHome } from './pages/OldHome';
 import { Home } from './pages/Home';
 import { Toaster } from 'react-hot-toast';
-import NewHome from './pages/new-home';
 import { AuthCallback } from './pages/AuthCallback';
 
 export function App() {
@@ -36,6 +36,7 @@ function AppContent({ isSidebarOpen, toggleSidebar }: { isSidebarOpen: boolean; 
   const { session } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     // Check if we have completed the initial auth check
@@ -55,14 +56,14 @@ function AppContent({ isSidebarOpen, toggleSidebar }: { isSidebarOpen: boolean; 
   }
 
   // Public routes that don't require authentication
-  const publicRoutes = ['/', '/new-home', '/login', '/signup', '/auth/callback'];
+  const publicRoutes = ['/', '/old-home', '/login', '/signup', '/auth/callback'];
   const isPublicRoute = (path: string) => publicRoutes.includes(path);
 
   return (
     <Routes>
       {/* Public Routes */}
       <Route path="/" element={<Home />} />
-      <Route path="/new-home" element={<NewHome />} />
+      <Route path="/old-home" element={<OldHome />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route 
         path="/login" 
@@ -77,40 +78,38 @@ function AppContent({ isSidebarOpen, toggleSidebar }: { isSidebarOpen: boolean; 
         } 
       />
       
-      {/* Protected Routes - Only accessible when logged in */}
-      {session ? (
-        <Route
-          path="/*"
-          element={
-            <div className="min-h-screen bg-white dark:bg-background-dark">
-              <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-              <div 
-                className={`flex flex-col min-h-screen transition-all duration-300 ${
-                  isSidebarOpen ? 'lg:pl-64' : 'lg:pl-20'
-                }`}
-              >
-                <Header toggleSidebar={toggleSidebar} onLogout={handleLogout} />
-                <main className="flex-1 px-4 sm:px-6 lg:px-8">
-                  <Routes>
-                    <Route path="dashboard" element={<Dashboard />} />
-                    <Route path="agents" element={<Agents />} />
-                    <Route path="agents/:id" element={<AgentDetails />} />
-                    <Route path="playbooks" element={<Playbooks />} />
-                    <Route path="playbooks/:id" element={<PlaybookDetails />} />
-                    <Route path="knowledge" element={<Knowledge />} />
-                    <Route path="settings" element={<Settings />} />
-                    <Route path="lead-generation/:id" element={<LeadGenerationDetails />} />
-                    <Route path="*" element={<Navigate to="../dashboard" replace />} />
-                  </Routes>
-                </main>
-                <Footer />
-              </div>
+      {/* Protected Routes */}
+      <Route element={
+        session ? (
+          <div className="min-h-screen bg-white dark:bg-background-dark">
+            <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+            <div 
+              className={`flex flex-col min-h-screen transition-all duration-300 ${
+                isSidebarOpen ? 'lg:pl-64' : 'lg:pl-20'
+              }`}
+            >
+              <Header toggleSidebar={toggleSidebar} onLogout={handleLogout} />
+              <main className="flex-1 px-4 sm:px-6 lg:px-8">
+                <Routes>
+                  <Route path="dashboard" element={<Dashboard />} />
+                  <Route path="agents" element={<Agents />} />
+                  <Route path="agents/:id" element={<AgentDetails />} />
+                  <Route path="playbooks" element={<Playbooks />} />
+                  <Route path="playbooks/:id" element={<PlaybookDetails />} />
+                  <Route path="knowledge" element={<Knowledge />} />
+                  <Route path="settings" element={<Settings />} />
+                  <Route path="lead-generation/:id" element={<LeadGenerationDetails />} />
+                </Routes>
+              </main>
+              <Footer />
             </div>
-          }
-        />
-      ) : (
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      )}
+          </div>
+        ) : (
+          <Navigate to="/login" state={{ from: location }} replace />
+        )
+      }>
+        <Route path="/*" element={<Navigate to="/dashboard" replace />} />
+      </Route>
     </Routes>
   );
 }

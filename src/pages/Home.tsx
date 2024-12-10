@@ -1,8 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
 import { Sun, Moon } from 'lucide-react';
-import { HeroChat } from '../components/HeroChat';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 const ThemeToggle = () => {
@@ -22,219 +21,481 @@ const ThemeToggle = () => {
   }, [isDark]);
 
   return (
-    <button
-      onClick={() => setIsDark(!isDark)}
-      className="p-2 rounded-full bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
-      aria-label="Toggle theme"
-    >
+    <ThemeButton onClick={() => setIsDark(!isDark)} aria-label="Toggle theme">
       {isDark ? <Sun size={20} /> : <Moon size={20} />}
-    </button>
+    </ThemeButton>
   );
 };
 
-const ShimmerBorder = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <div className="relative group">
-      <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-blue-500 to-purple-600 rounded-lg blur opacity-25 dark:opacity-50 group-hover:opacity-50 dark:group-hover:opacity-75 transition duration-1000 group-hover:duration-200 animate-gradient-xy"></div>
-      <div className="relative px-12 py-8 bg-white dark:bg-black rounded-lg leading-none flex items-center">
-        {children}
-      </div>
-    </div>
-  );
-};
-
-const GlowingBorder = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <div className="relative w-full max-w-4xl">
-      {/* Glow effect */}
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 via-orange-500 to-purple-600 rounded-lg blur-md opacity-75"></div>
-      {/* Main container */}
-      <div className="relative p-8 bg-gray-900/90 rounded-lg border border-gray-800">
-        {children}
-      </div>
-    </div>
-  );
-};
-
-export const Home = () => {
+export const Home: React.FC = () => {
   const navigate = useNavigate();
-  const { session, signOut } = useAuth();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
+  const { session } = useAuth();
 
   return (
-    <div 
-      ref={containerRef}
-      className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-white dark:from-black dark:via-black dark:to-gray-900 text-gray-900 dark:text-white snap-y snap-mandatory overflow-y-scroll"
-    >
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-black/50 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-600">
-          Robynn 🐦‍⬛ 
-          </div>
-          <div className="flex items-center space-x-4">
-            <ThemeToggle />
-            {session ? (
-              <>
-                <button 
-                  onClick={() => navigate('/dashboard')}
-                  className="px-6 py-2 rounded-full border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-all duration-300"
-                >
-                  Dashboard
-                </button>
-                <button 
-                  onClick={signOut}
-                  className="px-6 py-2 rounded-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white transition-all duration-300"
-                >
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <button 
-                  onClick={() => navigate('/login')}
-                  className="px-6 py-2 rounded-full border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-all duration-300"
-                >
-                  Login
-                </button>
-                <button 
-                  onClick={() => navigate('/signup')}
-                  className="px-6 py-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white transition-all duration-300"
-                >
-                  Sign Up
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
+    <Container>
+      <Header>
+        <Logo>Robynn</Logo>
+        <NavActions>
+          <ThemeToggle />
+          {!session ? (
+            <LoginButton onClick={() => navigate('/login')}>
+              Login
+            </LoginButton>
+          ) : (
+            <LoginButton onClick={() => navigate('/dashboard')}>
+              Dashboard
+            </LoginButton>
+          )}
+        </NavActions>
+      </Header>
 
-      <div className="pt-16">
-        {/* Hero Section */}
-        <section className="h-screen snap-start flex items-center justify-center relative overflow-hidden px-4">
-          {/* Background gradient */}
-          <motion.div
-            style={{
-              opacity: useTransform(scrollYProgress, [0, 0.2], [1, 0]),
-              y: useTransform(scrollYProgress, [0, 0.2], [0, 100])
-            }}
-            className="absolute inset-0 bg-gradient-to-b from-blue-500/5 via-purple-500/5 to-transparent dark:from-purple-500/10 dark:via-blue-500/5 dark:to-transparent"
-          />
+      <MainContent>
+        <Shapes>
+          <OrangeCircle />
+          <BlueCircle />
+          <GreenCircle />
+          <PurpleSemiCircle />
+          <GreenSemiCircle />
+          <OrangeTriangle />
+          <BlueTriangle />
+        </Shapes>
 
-          {/* Main content */}
-          <div className="relative z-10 w-full max-w-4xl mx-auto space-y-8">
-            {/* Headline and Subhead */}
-            <div className="text-center space-y-4">
-              <h1 className="text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 pb-4">
-                Growth. Engineered.
-              </h1>
-              <p className="text-xl text-gray-600 dark:text-gray-400 pb-20">
-                Product-led growth without the mindless marketing mechanics with
-                <br />
-                your very own growth engine that builds pipeline and revenue not just MQLs.
-              </p>
-            </div>
+        <HeroText>
+          <span style={{ position: 'relative' }}>
+            <BuildArrowShape>
+              <svg width="200" height="80" viewBox="0 0 200 80">
+                <g>
+                  <circle cx="20" cy="40" r="18" fill="none" stroke="black" strokeWidth="3"/>
+                  <line x1="40" y1="40" x2="120" y2="40" stroke="black" strokeWidth="3"/>
+                  <circle cx="160" cy="40" r="40" fill="#ff6b35"/>
+                  <path d="M140 40 L180 40 L160 20" stroke="black" strokeWidth="3" fill="none"/>
+                </g>
+              </svg>
+            </BuildArrowShape>
+            growth.
+          </span>
+          <span>engineered.</span>
+          <span>your very own personal </span>
+          <UnderlinedSpan>
+            agentic CMO <GearIcon>⚙️</GearIcon>
+            <Underline />
+          </UnderlinedSpan>
+        </HeroText>
 
-            {/* Hero Chat Component */}
-            <HeroChat scrollYProgress={useTransform(scrollYProgress, [0, 0.2], [1, 0])} />
-          </div>
-        </section>
+        <Description>
+          Robynn is a marketing platform built by marketers for marketers.
+        </Description>
 
-        {/* Features Grid */}
-        <section className="min-h-screen snap-start py-20 px-4">
-          <motion.div
-            style={{
-              opacity: useTransform(scrollYProgress, [0.2, 0.3, 0.5, 0.6], [0, 1, 1, 0]),
-              y: useTransform(scrollYProgress, [0.2, 0.3, 0.5, 0.6], [100, 0, 0, -100])
-            }}
-            className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-          >
-            {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.2 }}
-                className="p-6 rounded-lg bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg"
-              >
-                <div className="h-12 w-12 mb-4 text-blue-600 dark:text-blue-400">
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                <p className="text-gray-600 dark:text-gray-400">{feature.description}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </section>
+        <ActionButton onClick={() => navigate('/login')}>
+          Get Started ↓
+        </ActionButton>
 
-        {/* Interactive Demo Section */}
-        <section className="min-h-screen snap-start py-20 relative">
-          <motion.div
-            style={{
-              opacity: useTransform(scrollYProgress, [0.5, 0.6, 0.8, 0.9], [0, 1, 1, 0]),
-              y: useTransform(scrollYProgress, [0.5, 0.6, 0.8, 0.9], [100, 0, 0, -100])
-            }}
-            className="absolute inset-0 bg-gradient-to-r from-blue-100/20 to-purple-100/20 dark:from-blue-900/20 dark:to-purple-900/20" 
-          />
-          <div className="max-w-7xl mx-auto px-4">
-            <motion.div
-              style={{
-                opacity: useTransform(scrollYProgress, [0.5, 0.6, 0.8, 0.9], [0, 1, 1, 0]),
-                y: useTransform(scrollYProgress, [0.5, 0.6, 0.8, 0.9], [100, 0, 0, -100])
-              }}
-              className="aspect-video rounded-lg overflow-hidden bg-gray-900 border border-gray-700"
-            >
-              {/* Add your demo content here */}
-              <div className="h-full w-full flex items-center justify-center">
-                <span className="text-gray-400">Interactive Demo</span>
-              </div>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* Call to Action */}
-        <section className="min-h-screen snap-start py-20 px-4">
-          <motion.div
-            style={{
-              opacity: useTransform(scrollYProgress, [0.8, 0.9], [0, 1]),
-              y: useTransform(scrollYProgress, [0.8, 0.9], [100, 0])
-            }}
-            className="max-w-3xl mx-auto text-center"
-          >
-            <h2 className="text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-              Ready to get started?
-            </h2>
-            <p className="text-gray-400 mb-8">
-              Join us in shaping the future of AI interaction
-            </p>
-            <button className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all duration-300">
-              Get Started
-            </button>
-          </motion.div>
-        </section>
-      </div>
-    </div>
+        <YellowSliderShape>
+          <svg width="300" height="100" viewBox="0 0 300 100">
+            <g>
+              <rect width="300" height="80" rx="40" fill="#fbbc05"/>
+              <circle cx="100" cy="40" r="25" fill="#ff6b35"/>
+              <circle cx="250" cy="40" r="30" fill="white"/>
+              <line x1="40" y1="40" x2="80" y2="40" stroke="black" strokeWidth="3" strokeDasharray="6 6"/>
+            </g>
+          </svg>
+        </YellowSliderShape>
+      </MainContent>
+    </Container>
   );
 };
 
-const features = [
-  {
-    title: 'Agent',
-    description: 'Your very own CMO co-Agent that gets betters over time',
-    icon: '🤖',
-  },
-  {
-    title: 'Knowledge',
-    description: 'A self-correcting, evolving company knowledge to drive your product-led marketing and growth efforts.',
-    icon: '📚',
-  },
-  {
-    title: 'Playbooks',
-    description: 'Battle-tested, product-led marketing and sales playbooks to run your growth engine.',
-    icon: '📈',
-  },
-];
+const Container = styled.div`
+  padding: 1rem;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fff5f2 0%, #fff7f7 100%);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: hidden;
+  
+  @media (min-width: 768px) {
+    padding: 2rem;
+  }
+
+  &.dark {
+    background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+    color: #f3f4f6;
+  }
+`;
+
+const Header = styled.header`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  position: relative;
+  z-index: 10;
+  
+  @media (min-width: 768px) {
+    padding: 1rem 2rem;
+  }
+`;
+
+const Logo = styled.div`
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  
+  .dark & {
+    color: #f3f4f6;
+  }
+`;
+
+const NavActions = styled.div`
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+`;
+
+const ThemeButton = styled.button`
+  padding: 0.5rem;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #e0e0e0;
+  }
+
+  .dark & {
+    background: #374151;
+    color: #f3f4f6;
+
+    &:hover {
+      background: #4b5563;
+    }
+  }
+`;
+
+const LoginButton = styled.button`
+  padding: 0.5rem 1rem;
+  background: #1a1a1a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #333;
+  }
+
+  .dark & {
+    background: #f3f4f6;
+    color: #111827;
+
+    &:hover {
+      background: #e5e7eb;
+    }
+  }
+`;
+
+const ActionButton = styled.button`
+  margin-top: 2rem;
+  padding: 0.75rem 1.5rem;
+  background: #1a1a1a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  font-weight: 500;
+  position: relative;
+  z-index: 3;
+  
+  @media (min-width: 768px) {
+    font-size: 1rem;
+  }
+  
+  &:hover {
+    background: #333;
+  }
+
+  .dark & {
+    background: #f3f4f6;
+    color: #111827;
+
+    &:hover {
+      background: #e5e7eb;
+    }
+  }
+`;
+
+const MainContent = styled.main`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  position: relative;
+  z-index: 2;
+  
+  @media (min-width: 768px) {
+    padding: 4rem 2rem;
+  }
+`;
+
+const HeroText = styled.h1`
+  font-size: 3.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #1a1a1a;
+  margin: 0;
+  position: relative;
+  z-index: 3;
+  padding-left: 180px;
+  
+  span {
+    display: block;
+  }
+  
+  @media (min-width: 768px) {
+    font-size: 5rem;
+    padding-left: 220px;
+  }
+  
+  @media (min-width: 1024px) {
+    font-size: 7rem;
+    padding-left: 260px;
+  }
+
+  .dark & {
+    color: #f3f4f6;
+  }
+`;
+
+const Description = styled.p`
+  margin-top: 2rem;
+  font-size: 1rem;
+  max-width: 400px;
+  color: #4a4a4a;
+  position: relative;
+  z-index: 3;
+  
+  @media (min-width: 768px) {
+    font-size: 1.1rem;
+  }
+
+  .dark & {
+    color: #d1d5db;
+  }
+`;
+
+const Shapes = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+  
+  @media (min-width: 768px) {
+    opacity: 0.7;
+  }
+
+  .dark & {
+    opacity: 0.3;
+    
+    @media (min-width: 768px) {
+      opacity: 0.4;
+    }
+  }
+`;
+
+const OrangeCircle = styled.div`
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: #ff6b35;
+  border-radius: 50%;
+  right: 15%;
+  top: 10%;
+  
+  @media (min-width: 768px) {
+    width: 50px;
+    height: 50px;
+    right: 20%;
+    top: 12%;
+  }
+  
+  @media (min-width: 1024px) {
+    width: 60px;
+    height: 60px;
+    right: 25%;
+    top: 15%;
+  }
+`;
+
+const BlueCircle = styled.div`
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: #4285f4;
+  border-radius: 50%;
+  right: 25%;
+  top: 20%;
+  
+  @media (min-width: 768px) {
+    width: 35px;
+    height: 35px;
+    right: 30%;
+    top: 22%;
+  }
+  
+  @media (min-width: 1024px) {
+    width: 40px;
+    height: 40px;
+    right: 35%;
+    top: 25%;
+  }
+`;
+
+const GreenCircle = styled.div`
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: #34a853;
+  border-radius: 50%;
+  right: 20%;
+  top: 35%;
+`;
+
+const PurpleSemiCircle = styled.div`
+  position: absolute;
+  width: 80px;
+  height: 40px;
+  background: #a142f4;
+  border-radius: 40px 40px 0 0;
+  right: 15%;
+  top: 45%;
+  transform: rotate(-15deg);
+`;
+
+const GreenSemiCircle = styled.div`
+  position: absolute;
+  width: 80px;
+  height: 40px;
+  background: #34a853;
+  border-radius: 40px 40px 0 0;
+  right: 40%;
+  top: 55%;
+  transform: rotate(15deg);
+`;
+
+const OrangeTriangle = styled.div`
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 30px solid transparent;
+  border-right: 30px solid transparent;
+  border-bottom: 52px solid #ff6b35;
+  right: 30%;
+  bottom: 25%;
+`;
+
+const BlueTriangle = styled.div`
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 30px solid transparent;
+  border-right: 30px solid transparent;
+  border-bottom: 52px solid #4285f4;
+  right: 15%;
+  bottom: 35%;
+  transform: rotate(-15deg);
+`;
+
+const YellowSliderShape = styled.div`
+  position: absolute;
+  right: 20px;
+  top: 200px;
+  z-index: 1;
+  width: 200px;
+  height: 67px;
+  
+  @media (min-width: 768px) {
+    right: 60px;
+    top: 250px;
+    width: 250px;
+    height: 84px;
+    z-index: 10;
+  }
+  
+  @media (min-width: 1024px) {
+    right: 100px;
+    top: 300px;
+    width: 300px;
+    height: 100px;
+  }
+`;
+
+const UnderlinedSpan = styled.span`
+  position: relative;
+  display: inline-block;
+`;
+
+const Underline = styled.div`
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 100px;
+  height: 3px;
+  background-color: #000;
+
+  .dark & {
+    background-color: #f3f4f6;
+  }
+`;
+
+const BuildArrowShape = styled.div`
+  position: absolute;
+  left: -180px;
+  top: 80px;
+  z-index: 1;
+  width: 120px;
+  height: 48px;
+  
+  @media (min-width: 768px) {
+    width: 160px;
+    height: 64px;
+    left: -220px;
+    top: 100px;
+  }
+  
+  @media (min-width: 1024px) {
+    width: 200px;
+    height: 80px;
+    left: -260px;
+    top: 120px;
+  }
+
+  .dark & {
+    svg {
+      stroke: #f3f4f6;
+      
+      circle, line, path {
+        stroke: #f3f4f6;
+      }
+      
+      circle[fill="#ff6b35"] {
+        fill: #ff6b35;
+      }
+    }
+  }
+`;
+
+const GearIcon = styled.span`
+  display: inline-block;
+  margin-left: 1rem;
+`;
