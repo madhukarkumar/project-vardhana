@@ -292,6 +292,13 @@ export function Knowledge() {
     setIsChatOpen(false);
   };
 
+  const handleClearChat = () => {
+    setMessages([
+      { role: 'assistant', content: "Welcome! How can I help you with the knowledge base?" }
+    ]);
+    localStorage.removeItem('chatMessages');
+  };
+
   return (
     <div className="relative">
       <div className={`transition-all duration-300 ${isChatOpen ? 'mr-96' : 'mr-0'}`}>
@@ -382,12 +389,35 @@ export function Knowledge() {
                 <p className="text-sm text-gray-600 dark:text-gray-400">Chat with your knowledge base</p>
               </div>
             </div>
-            <button
-              onClick={handleCloseChat}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleClearChat}
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400"
+                title="Clear chat history"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M3 6h18" />
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                </svg>
+              </button>
+              <button
+                onClick={handleCloseChat}
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              </button>
+            </div>
           </div>
 
           {/* Chat Messages */}
