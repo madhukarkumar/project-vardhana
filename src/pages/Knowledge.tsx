@@ -1,42 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Package, Building2, Users2, LineChart, ArrowRight, Plus, X, Send, Bot, MessageSquare, Search, Upload } from 'lucide-react';
-import { Card } from '../components/ui/Card';
+import { Plus, X, Send, Bot, MessageSquare, Upload } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-
-const cards = [
-  {
-    title: 'Product',
-    description: 'Product information, features, and technical specifications',
-    icon: Package,
-    stats: { total: '156 entries', updated: 'Updated 2h ago' },
-    color: 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400',
-    span: 'col-span-2'
-  },
-  {
-    title: 'Companies',
-    description: 'Customer and competitor company profiles',
-    icon: Building2,
-    stats: { total: '2,847 profiles', updated: 'Updated 4h ago' },
-    color: 'bg-purple-500/10 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400',
-    span: 'col-span-1'
-  },
-  {
-    title: 'People',
-    description: 'Contact information and interaction history',
-    icon: Users2,
-    stats: { total: '12,847 contacts', updated: 'Updated 1h ago' },
-    color: 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400',
-    span: 'col-span-1'
-  },
-  {
-    title: 'Opportunities',
-    description: 'Sales opportunities and pipeline data',
-    icon: LineChart,
-    stats: { total: '847 active', updated: 'Updated 30m ago' },
-    color: 'bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400',
-    span: 'col-span-2'
-  }
-];
+import ForceGraph2D from 'react-force-graph-2d';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -47,11 +12,77 @@ interface Message {
   };
 }
 
+interface GraphNode {
+  id: string;
+  group: number;
+  color: string;
+}
+
+interface GraphLink {
+  source: string;
+  target: string;
+}
+
+interface GraphData {
+  nodes: GraphNode[];
+  links: GraphLink[];
+}
+
+// Define links
+const graphLinks: GraphLink[] = [
+  { source: 'Knowledge Graph', target: 'Product' },
+  { source: 'Knowledge Graph', target: 'Companies' },
+  { source: 'Knowledge Graph', target: 'People' },
+  { source: 'Knowledge Graph', target: 'Marketing' },
+  { source: 'Knowledge Graph', target: 'Development' },
+  { source: 'Knowledge Graph', target: 'Sales' },
+  { source: 'Product', target: 'Features' },
+  { source: 'Product', target: 'Specifications' },
+  { source: 'Companies', target: 'Competitors' },
+  { source: 'Companies', target: 'Customers' },
+  { source: 'People', target: 'Team' },
+  { source: 'People', target: 'Contacts' },
+  { source: 'Marketing', target: 'Strategies' },
+  { source: 'Marketing', target: 'Campaigns' },
+  { source: 'Development', target: 'Architecture' },
+  { source: 'Development', target: 'Technologies' },
+  { source: 'Sales', target: 'Pipeline' },
+  { source: 'Sales', target: 'Opportunities' }
+];
+
+// Create nodes with colors
+const graphNodes: GraphNode[] = [
+  { id: 'Knowledge Graph', group: 1, color: '#4f46e5' },
+  { id: 'Product', group: 2, color: '#10b981' },
+  { id: 'Companies', group: 2, color: '#10b981' },
+  { id: 'People', group: 2, color: '#10b981' },
+  { id: 'Marketing', group: 2, color: '#10b981' },
+  { id: 'Development', group: 2, color: '#10b981' },
+  { id: 'Sales', group: 2, color: '#10b981' },
+  { id: 'Features', group: 3, color: '#6366f1' },
+  { id: 'Specifications', group: 3, color: '#6366f1' },
+  { id: 'Competitors', group: 3, color: '#6366f1' },
+  { id: 'Customers', group: 3, color: '#6366f1' },
+  { id: 'Team', group: 3, color: '#6366f1' },
+  { id: 'Contacts', group: 3, color: '#6366f1' },
+  { id: 'Strategies', group: 3, color: '#6366f1' },
+  { id: 'Campaigns', group: 3, color: '#6366f1' },
+  { id: 'Architecture', group: 3, color: '#6366f1' },
+  { id: 'Technologies', group: 3, color: '#6366f1' },
+  { id: 'Pipeline', group: 3, color: '#6366f1' },
+  { id: 'Opportunities', group: 3, color: '#6366f1' }
+];
+
+const graphData: GraphData = {
+  nodes: graphNodes,
+  links: graphLinks
+};
+
 // Webhook URL for file uploads
 const FILE_UPLOAD_WEBHOOK_URL = 'https://madhukar.app.n8n.cloud/webhook/44dc1d91-4557-415c-a167-9599f4feb78a';
 
 export function Knowledge() {
-  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(true);
   const [sessionId, setSessionId] = useState<string>('');
   const [newMessage, setNewMessage] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -72,6 +103,27 @@ export function Knowledge() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+
+  // Graph ref for accessing graph methods
+  const [selectedNode, setSelectedNode] = useState<string | null>(null);
+  const [highlightNodes, setHighlightNodes] = useState(new Set<string>());
+  const [graphDimensions, setGraphDimensions] = useState({
+    width: window.innerWidth - (isChatOpen ? 484 : 100),
+    height: window.innerHeight - 200
+  });
+
+  // Update graph dimensions when chat sidebar or window size changes
+  useEffect(() => {
+    const handleResize = () => {
+      setGraphDimensions({
+        width: window.innerWidth - (isChatOpen ? 484 : 100),
+        height: window.innerHeight - 200
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isChatOpen]);
 
   // Save messages to localStorage whenever they change
   useEffect(() => {
@@ -299,6 +351,23 @@ export function Knowledge() {
     localStorage.removeItem('chatMessages');
   };
 
+  const handleNodeClick = useCallback((node: GraphNode) => {
+    setSelectedNode(node.id);
+  }, []);
+
+  const handleNodeHover = useCallback((node: GraphNode | null) => {
+    if (node) {
+      const neighbors = new Set<string>();
+      graphLinks.forEach(link => {
+        if (link.source === node.id) neighbors.add(link.target);
+        if (link.target === node.id) neighbors.add(link.source);
+      });
+      setHighlightNodes(neighbors);
+    } else {
+      setHighlightNodes(new Set());
+    }
+  }, []);
+
   return (
     <div className="relative">
       <div className={`transition-all duration-300 ${isChatOpen ? 'mr-96' : 'mr-0'}`}>
@@ -316,48 +385,42 @@ export function Knowledge() {
           </button>
         </div>
 
-        <div className="mb-6 flex gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search Knowledge base..."
-              className="h-10 w-full rounded-lg border border-border-card-light dark:border-border-card-dark bg-white dark:bg-background-card-dark pl-10 pr-4 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-3 gap-6">
-          {cards.map((card) => (
-            <div
-              key={card.title}
-              className={`${card.span} group`}
-            >
-              <Card className="h-full transition-all hover:border-primary-300 dark:hover:border-primary-600">
-                <Card.Body>
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className={`rounded-lg ${card.color} p-3`}>
-                      <card.icon className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{card.title}</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">{card.description}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">{card.stats.total}</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">{card.stats.updated}</p>
-                    </div>
-                    <div className="p-2 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all">
-                      <ArrowRight className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                    </div>
-                  </div>
-                </Card.Body>
-              </Card>
-            </div>
-          ))}
+        {/* Knowledge Graph */}
+        <div className="rounded-lg bg-gray-900 p-4 relative min-h-[600px]">
+          <ForceGraph2D
+            graphData={graphData}
+            width={graphDimensions.width}
+            height={graphDimensions.height}
+            nodeRelSize={6}
+            nodeColor={(node: any) => node.color}
+            linkColor={() => '#4b5563'}
+            backgroundColor="#111827"
+            nodeLabel="id"
+            linkWidth={2}
+            linkDirectionalParticles={4}
+            linkDirectionalParticleWidth={2}
+            linkDirectionalParticleSpeed={0.005}
+            d3VelocityDecay={0.3}
+            cooldownTime={2000}
+            onNodeClick={handleNodeClick}
+            onNodeHover={handleNodeHover}
+            nodeCanvasObject={(node: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
+              const label = node.id;
+              const fontSize = node.group === 1 ? 16 : 12;
+              ctx.font = `${fontSize}px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+              ctx.fillStyle = highlightNodes.has(node.id) ? '#f59e0b' : '#fff';
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'middle';
+              ctx.fillText(label, node.x, node.y);
+            }}
+            nodePointerAreaPaint={(node: any, color: string, ctx: CanvasRenderingContext2D) => {
+              ctx.fillStyle = color;
+              const size = node.group === 1 ? 12 : 8;
+              ctx.beginPath();
+              ctx.arc(node.x, node.y, size, 0, 2 * Math.PI);
+              ctx.fill();
+            }}
+          />
         </div>
       </div>
 
