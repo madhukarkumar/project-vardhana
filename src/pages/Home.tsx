@@ -1,31 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { Sun, Moon } from 'lucide-react';
+import { Bot } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-
-const ThemeToggle = () => {
-  const [isDark, setIsDark] = useState(() => {
-    const storedTheme = localStorage.getItem('theme');
-    if (storedTheme === 'light') return false;
-    return true;
-  });
-
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-  }, [isDark]);
-
-  return (
-    <ThemeButton onClick={() => setIsDark(!isDark)} aria-label="Toggle theme">
-      {isDark ? <Sun size={20} /> : <Moon size={20} />}
-    </ThemeButton>
-  );
-};
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -36,7 +13,6 @@ export const Home: React.FC = () => {
       <Header>
         <Logo>Robynn</Logo>
         <NavActions>
-          <ThemeToggle />
           {!session ? (
             <LoginButton onClick={() => navigate('/login')}>
               Login
@@ -86,9 +62,11 @@ export const Home: React.FC = () => {
           Robynn is a marketing platform built by marketers for marketers.
         </Description>
 
-        <ActionButton onClick={() => navigate('/login')}>
-          Get Started ↓
-        </ActionButton>
+        <ButtonWrapper>
+          <ShimmerButton onClick={() => navigate('/login')}>
+            Get Started
+          </ShimmerButton>
+        </ButtonWrapper>
 
         <YellowSliderShape>
           <svg width="300" height="100" viewBox="0 0 300 100">
@@ -106,19 +84,14 @@ export const Home: React.FC = () => {
 };
 
 const Container = styled.div`
-  padding: 1rem;
+  padding: 0.5rem;
   min-height: 100vh;
   background: linear-gradient(135deg, #fff5f2 0%, #fff7f7 100%);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   overflow-x: hidden;
   
   @media (min-width: 768px) {
-    padding: 2rem;
-  }
-
-  &.dark {
-    background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
-    color: #f3f4f6;
+    padding: 1rem;
   }
 `;
 
@@ -126,12 +99,12 @@ const Header = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: 0.5rem;
   position: relative;
   z-index: 10;
   
   @media (min-width: 768px) {
-    padding: 1rem 2rem;
+    padding: 0.75rem 1.5rem;
   }
 `;
 
@@ -139,10 +112,6 @@ const Logo = styled.div`
   font-size: 1.5rem;
   font-weight: 700;
   color: #1a1a1a;
-  
-  .dark & {
-    color: #f3f4f6;
-  }
 `;
 
 const NavActions = styled.div`
@@ -151,142 +120,146 @@ const NavActions = styled.div`
   align-items: center;
 `;
 
-const ThemeButton = styled.button`
-  padding: 0.5rem;
-  background: #f0f0f0;
-  border: none;
-  border-radius: 9999px;
-  cursor: pointer;
-  color: #1a1a1a;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-
-  &:hover {
-    background: #e0e0e0;
-  }
-
-  .dark & {
-    background: #374151;
-    color: #f3f4f6;
-
-    &:hover {
-      background: #4b5563;
-    }
-  }
-`;
-
-const LoginButton = styled.button`
-  padding: 0.5rem 1rem;
-  background: #1a1a1a;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.2s;
-
-  &:hover {
-    background: #333;
-  }
-
-  .dark & {
-    background: #f3f4f6;
-    color: #111827;
-
-    &:hover {
-      background: #e5e7eb;
-    }
-  }
-`;
-
-const ActionButton = styled.button`
-  margin-top: 2rem;
-  padding: 0.75rem 1.5rem;
-  background: #1a1a1a;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  cursor: pointer;
-  font-weight: 500;
+const BaseShimmerButton = styled.button`
   position: relative;
-  z-index: 3;
-  
-  @media (min-width: 768px) {
-    font-size: 1rem;
+  padding: 0.75rem 2rem;
+  background: linear-gradient(
+    to right,
+    #1a1a1a,
+    #333
+  );
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  overflow: hidden;
+  transform: translateZ(0);
+  transition: all 0.2s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(255, 255, 255, 0.2) 20%,
+      rgba(255, 255, 255, 0.3) 50%,
+      rgba(255, 255, 255, 0.2) 80%,
+      transparent
+    );
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    transform: translateX(-100%) skewX(-15deg);
   }
-  
+
   &:hover {
-    background: #333;
+    background: linear-gradient(
+      to right,
+      #333,
+      #404040
+    );
   }
 
-  .dark & {
-    background: #f3f4f6;
-    color: #111827;
+  &:hover::before {
+    opacity: 1;
+    animation: shimmer 2s infinite;
+  }
 
-    &:hover {
-      background: #e5e7eb;
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%) skewX(-15deg);
     }
+    100% {
+      transform: translateX(200%) skewX(-15deg);
+    }
+  }
+`;
+
+const LoginButton = styled(BaseShimmerButton)`
+  font-size: 0.875rem;
+  padding: 0.5rem 1.5rem;
+  z-index: 10;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+`;
+
+const ShimmerButton = styled(BaseShimmerButton)`
+  font-size: 0.875rem;
+  z-index: 10;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  
+  @media (min-width: 480px) {
+    font-size: 1rem;
   }
 `;
 
 const MainContent = styled.main`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 1rem;
   position: relative;
-  z-index: 2;
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   
   @media (min-width: 768px) {
-    padding: 4rem 2rem;
+    padding: 2rem;
+    min-height: calc(100vh - 100px);
   }
 `;
 
 const HeroText = styled.h1`
-  font-size: 3.5rem;
+  font-size: 2.5rem;
   font-weight: 700;
   line-height: 1.1;
   color: #1a1a1a;
   margin: 0;
   position: relative;
-  z-index: 3;
-  padding-left: 180px;
+  z-index: 10;
+  padding-left: 20px;
   
   span {
     display: block;
   }
   
+  @media (min-width: 480px) {
+    font-size: 3rem;
+    padding-left: 100px;
+  }
+  
   @media (min-width: 768px) {
     font-size: 5rem;
-    padding-left: 220px;
+    padding-left: 180px;
   }
   
   @media (min-width: 1024px) {
-    font-size: 7rem;
-    padding-left: 260px;
-  }
-
-  .dark & {
-    color: #f3f4f6;
+    font-size: 6.5rem;
+    padding-left: 220px;
   }
 `;
 
 const Description = styled.p`
-  margin-top: 2rem;
-  font-size: 1rem;
-  max-width: 400px;
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+  max-width: 300px;
   color: #4a4a4a;
   position: relative;
-  z-index: 3;
+  z-index: 10;
+  padding-left: 20px;
+  
+  @media (min-width: 480px) {
+    padding-left: 100px;
+    font-size: 1rem;
+    max-width: 350px;
+  }
   
   @media (min-width: 768px) {
+    padding-left: 180px;
     font-size: 1.1rem;
-  }
-
-  .dark & {
-    color: #d1d5db;
+    max-width: 400px;
+    margin-top: 2rem;
   }
 `;
 
@@ -297,146 +270,177 @@ const Shapes = styled.div`
   bottom: 0;
   left: 0;
   pointer-events: none;
-  z-index: 0;
+  z-index: 1;
   opacity: 0.5;
   
   @media (min-width: 768px) {
     opacity: 0.7;
   }
-
-  .dark & {
-    opacity: 0.3;
-    
-    @media (min-width: 768px) {
-      opacity: 0.4;
-    }
-  }
 `;
 
 const OrangeCircle = styled.div`
   position: absolute;
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   background: #ff6b35;
   border-radius: 50%;
-  right: 15%;
+  right: 10%;
   top: 10%;
   
   @media (min-width: 768px) {
     width: 50px;
     height: 50px;
-    right: 20%;
-    top: 12%;
+    right: 25%;
+    top: 10%;
   }
   
   @media (min-width: 1024px) {
     width: 60px;
     height: 60px;
-    right: 25%;
-    top: 15%;
+    right: 30%;
+    top: 10%;
   }
 `;
 
 const BlueCircle = styled.div`
   position: absolute;
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   background: #4285f4;
   border-radius: 50%;
-  right: 25%;
-  top: 20%;
+  right: 80%;
+  top: 25%;
   
   @media (min-width: 768px) {
     width: 35px;
     height: 35px;
-    right: 30%;
-    top: 22%;
+    right: 45%;
+    top: 30%;
   }
   
   @media (min-width: 1024px) {
     width: 40px;
     height: 40px;
-    right: 35%;
-    top: 25%;
+    right: 90%;
+    top: 35%;
   }
 `;
 
 const GreenCircle = styled.div`
   position: absolute;
-  width: 40px;
-  height: 40px;
+  width: 35px;
+  height: 35px;
   background: #34a853;
   border-radius: 50%;
-  right: 20%;
-  top: 35%;
+  right: 15%;
+  top: 40%;
+  
+  @media (min-width: 768px) {
+    width: 45px;
+    height: 45px;
+    right: 20%;
+    top: 45%;
+  }
 `;
 
 const PurpleSemiCircle = styled.div`
   position: absolute;
-  width: 80px;
-  height: 40px;
+  width: 60px;
+  height: 30px;
   background: #a142f4;
-  border-radius: 40px 40px 0 0;
-  right: 15%;
-  top: 45%;
+  border-radius: 30px 30px 0 0;
+  right: 20%;
+  top: 50%;
   transform: rotate(-15deg);
+  
+  @media (min-width: 768px) {
+    width: 80px;
+    height: 40px;
+    right: 10%;
+    top: 55%;
+  }
 `;
 
 const GreenSemiCircle = styled.div`
   position: absolute;
-  width: 80px;
-  height: 40px;
+  width: 60px;
+  height: 30px;
   background: #34a853;
-  border-radius: 40px 40px 0 0;
-  right: 40%;
-  top: 55%;
+  border-radius: 30px 30px 0 0;
+  right: 5%;
+  top: 60%;
   transform: rotate(15deg);
+  
+  @media (min-width: 768px) {
+    width: 80px;
+    height: 40px;
+    right: 10%;
+    top: 65%;
+  }
 `;
 
 const OrangeTriangle = styled.div`
   position: absolute;
   width: 0;
   height: 0;
-  border-left: 30px solid transparent;
-  border-right: 30px solid transparent;
-  border-bottom: 52px solid #ff6b35;
-  right: 30%;
-  bottom: 25%;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-bottom: 35px solid #ff6b35;
+  right: 40%;
+  bottom: 30%;
+  
+  @media (min-width: 768px) {
+    border-left: 30px solid transparent;
+    border-right: 30px solid transparent;
+    border-bottom: 52px solid #ff6b35;
+    right: 35%;
+    bottom: 25%;
+  }
 `;
 
 const BlueTriangle = styled.div`
   position: absolute;
   width: 0;
   height: 0;
-  border-left: 30px solid transparent;
-  border-right: 30px solid transparent;
-  border-bottom: 52px solid #4285f4;
-  right: 15%;
-  bottom: 35%;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-bottom: 35px solid #4285f4;
+  right: 1%;
+  bottom: 40%;
   transform: rotate(-15deg);
+  
+  @media (min-width: 768px) {
+    border-left: 30px solid transparent;
+    border-right: 30px solid transparent;
+    border-bottom: 52px solid #4285f4;
+    right: 1%;
+    bottom: 35%;
+  }
 `;
 
 const YellowSliderShape = styled.div`
   position: absolute;
-  right: 20px;
-  top: 200px;
+  right: 5%;
+  top: 70%;
   z-index: 1;
-  width: 200px;
-  height: 67px;
+  width: 150px;
+  height: 50px;
+  transform: scale(0.8);
   
   @media (min-width: 768px) {
-    right: 60px;
-    top: 250px;
+    right: 10%;
+    top: 75%;
     width: 250px;
     height: 84px;
-    z-index: 10;
+    transform: scale(0.9);
   }
   
   @media (min-width: 1024px) {
-    right: 100px;
-    top: 300px;
+    right: 15%;
+    top: 80%;
     width: 300px;
     height: 100px;
+    transform: scale(1);
   }
 `;
 
@@ -452,50 +456,56 @@ const Underline = styled.div`
   width: 100px;
   height: 3px;
   background-color: #000;
-
-  .dark & {
-    background-color: #f3f4f6;
-  }
 `;
 
 const BuildArrowShape = styled.div`
   position: absolute;
-  left: -180px;
-  top: 80px;
-  z-index: 1;
-  width: 120px;
-  height: 48px;
+  left: -10px;
+  top: 60px;
+  z-index: 10;
+  width: 80px;
+  height: 32px;
+  transform: scale(0.7);
+  
+  @media (min-width: 480px) {
+    left: -80px;
+    width: 120px;
+    height: 48px;
+    transform: scale(0.8);
+  }
   
   @media (min-width: 768px) {
     width: 160px;
     height: 64px;
-    left: -220px;
-    top: 100px;
+    left: -160px;
+    top: 80px;
+    transform: scale(0.9);
   }
   
   @media (min-width: 1024px) {
     width: 200px;
     height: 80px;
-    left: -260px;
-    top: 120px;
-  }
-
-  .dark & {
-    svg {
-      stroke: #f3f4f6;
-      
-      circle, line, path {
-        stroke: #f3f4f6;
-      }
-      
-      circle[fill="#ff6b35"] {
-        fill: #ff6b35;
-      }
-    }
+    left: -200px;
+    top: 100px;
+    transform: scale(1);
   }
 `;
 
 const GearIcon = styled.span`
   display: inline-block;
   margin-left: 1rem;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  padding-left: 20px;
+  margin-top: 2rem;
+  
+  @media (min-width: 480px) {
+    padding-left: 100px;
+  }
+  
+  @media (min-width: 768px) {
+    padding-left: 180px;
+  }
 `;

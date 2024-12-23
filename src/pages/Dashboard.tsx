@@ -5,30 +5,6 @@ import { Card } from '../components/ui/Card';
 import { PerformanceCharts } from '../components/dashboard/PerformanceCharts';
 
 export function Dashboard() {
-  const navCards = [
-    {
-      title: 'Knowledge',
-      description: 'Manage and explore your organization\'s knowledge base',
-      icon: Database,
-      href: '/knowledge',
-      color: 'bg-purple-600',
-    },
-    {
-      title: 'Agents',
-      description: 'Configure and monitor your AI marketing agents',
-      icon: Bot,
-      href: '/agents',
-      color: 'bg-blue-600',
-    },
-    {
-      title: 'Playbooks',
-      description: 'Create and manage automation workflows',
-      icon: BookOpen,
-      href: '/playbooks',
-      color: 'bg-emerald-600',
-    },
-  ];
-
   const stats = [
     {
       title: 'Active Campaigns',
@@ -81,32 +57,6 @@ export function Dashboard() {
       <div className="mb-8">
         <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Welcome back, John!</h1>
         <p className="mt-1 text-gray-600 dark:text-gray-400">Here's what's happening with your marketing co-agents.</p>
-      </div>
-
-      {/* Navigation Cards */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-8">
-        {navCards.map((card) => (
-          <Link
-            key={card.title}
-            to={card.href}
-            className="group relative"
-          >
-            <Card className="h-full min-h-[180px] transition-all hover:border-gray-300 dark:hover:border-gray-600">
-              <Card.Body>
-                <div className={`rounded-lg ${card.color} p-3 inline-flex`}>
-                  <card.icon className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mt-4 mb-2">{card.title}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-8">{card.description}</p>
-                <div className="absolute bottom-6 right-6">
-                  <div className="p-2 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all">
-                    <ChevronRight className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                  </div>
-                </div>
-              </Card.Body>
-            </Card>
-          </Link>
-        ))}
       </div>
 
       {/* Stats Grid */}

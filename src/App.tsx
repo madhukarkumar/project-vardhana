@@ -15,7 +15,6 @@ import { PlaybookDetails } from './pages/PlaybookDetails';
 import { Knowledge } from './pages/Knowledge';
 import { Settings } from './pages/Settings';
 import { LeadGenerationDetails } from './pages/LeadGenerationDetails';
-import { OldHome } from './pages/OldHome';
 import { Home } from './pages/Home';
 import { Toaster } from 'react-hot-toast';
 import { AuthCallback } from './pages/AuthCallback';
@@ -56,14 +55,13 @@ function AppContent({ isSidebarOpen, toggleSidebar }: { isSidebarOpen: boolean; 
   }
 
   // Public routes that don't require authentication
-  const publicRoutes = ['/', '/old-home', '/login', '/signup', '/auth/callback'];
+  const publicRoutes = ['/', '/login', '/signup', '/auth/callback'];
   const isPublicRoute = (path: string) => publicRoutes.includes(path);
 
   return (
     <Routes>
       {/* Public Routes */}
       <Route path="/" element={<Home />} />
-      <Route path="/old-home" element={<OldHome />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route 
         path="/login" 
