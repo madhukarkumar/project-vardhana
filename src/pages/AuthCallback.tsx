@@ -14,7 +14,9 @@ export function AuthCallback() {
         const refreshToken = hashParams.get('refresh_token')
 
         if (!accessToken) {
-          throw new Error('No access token found in URL')
+          // Silently redirect without showing error - the error will be shown by the login page
+          navigate('/login')
+          return
         }
 
         const { data: { session }, error } = await supabase.auth.setSession({
@@ -31,10 +33,15 @@ export function AuthCallback() {
         }
 
         toast.success('Successfully signed in!')
-        navigate('/')
+        navigate('/dashboard')
       } catch (error) {
         console.error('Error in auth callback:', error)
-        toast.error('Failed to complete authentication')
+        // Clear any existing session
+        await supabase.auth.signOut()
+        // Only show error toast if we had an access token but failed to establish session
+        if (new URLSearchParams(window.location.hash.substring(1)).get('access_token')) {
+          toast.error('Failed to complete authentication')
+        }
         navigate('/login')
       }
     }

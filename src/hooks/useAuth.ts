@@ -79,10 +79,10 @@ export function useAuth() {
         },
       });
 
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error signing in with Google:', error);
-      throw error;
+      if (error) {
+        console.error('Error signing in with Google:', error);
+        throw error;
+      }
     } finally {
       setLoading(false);
     }
