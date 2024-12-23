@@ -47,6 +47,9 @@ interface Message {
   };
 }
 
+// Webhook URL for file uploads
+const FILE_UPLOAD_WEBHOOK_URL = 'https://madhukar.app.n8n.cloud/webhook/44dc1d91-4557-415c-a167-9599f4feb78a';
+
 export function Knowledge() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [sessionId, setSessionId] = useState<string>('');
@@ -67,6 +70,8 @@ export function Knowledge() {
   const [url, setUrl] = useState('');
   const [addType, setAddType] = useState<'file' | 'url'>('file');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   // Save messages to localStorage whenever they change
   useEffect(() => {
@@ -216,30 +221,70 @@ export function Knowledge() {
   };
 
   const handleAdd = async () => {
-    if (!selectedCategory) return;
     if (addType === 'file' && !selectedFile) return;
     if (addType === 'url' && !url.trim()) return;
     
-    if (addType === 'file') {
-      // TODO: Implement file upload logic here
-      console.log('Uploading file:', selectedFile, 'for category:', selectedCategory);
-    } else {
+    if (addType === 'file' && selectedFile) {
+      setIsUploading(true);
+      setUploadError(null);
+      
+      try {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+
+        const response = await fetch(FILE_UPLOAD_WEBHOOK_URL, {
+          method: 'POST',
+          body: formData,
+          mode: 'cors',
+          headers: {
+            'Accept': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          console.error('Upload failed:', {
+            status: response.status,
+            statusText: response.statusText
+          });
+          throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
+        }
+
+        try {
+          const data = await response.json();
+          console.log('Upload response:', data);
+        } catch (e) {
+          console.log('Upload successful but response is not JSON');
+        }
+
+        // Reset and close modal after successful upload
+        resetModal();
+        alert('File uploaded successfully!');
+      } catch (error) {
+        console.error('Upload error:', error);
+        let errorMessage = 'Failed to upload file';
+        
+        if (error instanceof Error) {
+          if (error.message.includes('Failed to fetch')) {
+            errorMessage = 'Unable to connect to the server. Please check your internet connection and try again.';
+          } else {
+            errorMessage = error.message;
+          }
+        }
+        
+        setUploadError(errorMessage);
+      } finally {
+        setIsUploading(false);
+      }
+    } else if (addType === 'url') {
       // TODO: Implement URL addition logic here
-      console.log('Adding URL:', url, 'for category:', selectedCategory);
+      console.log('Adding URL:', url);
     }
-    
-    // Reset and close modal after upload
-    setSelectedFile(null);
-    setUrl('');
-    setSelectedCategory('');
-    setIsUploadModalOpen(false);
   };
 
   const resetModal = () => {
     setSelectedFile(null);
     setUrl('');
     setAddType('file');
-    setSelectedCategory('');
     setIsUploadModalOpen(false);
   };
 
@@ -417,149 +462,99 @@ export function Knowledge() {
 
       {/* Add Knowledge Modal */}
       {isUploadModalOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={resetModal} />
-            
-            <div className="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-900 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
-              <div className="absolute right-0 top-0 pr-4 pt-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Add Knowledge</h2>
+              <button onClick={resetModal} className="text-gray-500 hover:text-gray-700">
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex space-x-4 mb-4">
                 <button
-                  type="button"
-                  className="rounded-md text-gray-400 hover:text-gray-500"
-                  onClick={resetModal}
+                  onClick={() => setAddType('file')}
+                  className={`flex-1 py-2 px-4 rounded-md ${
+                    addType === 'file'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-200 text-gray-700'
+                  }`}
+                  disabled={isUploading}
                 >
-                  <X className="h-6 w-6" />
+                  File
+                </button>
+                <button
+                  onClick={() => setAddType('url')}
+                  className={`flex-1 py-2 px-4 rounded-md ${
+                    addType === 'url'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-200 text-gray-700'
+                  }`}
+                  disabled={isUploading}
+                >
+                  URL
                 </button>
               </div>
-              
-              <div className="sm:flex sm:items-start">
-                <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
-                  <h3 className="text-lg font-semibold leading-6 text-gray-900 dark:text-white mb-4">
-                    Add Knowledge
-                  </h3>
 
-                  {/* Category Selection */}
-                  <div className="mb-6">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Select Category
-                    </label>
-                    <div className="grid grid-cols-2 gap-3">
-                      {cards.map((card) => (
-                        <button
-                          key={card.title}
-                          onClick={() => setSelectedCategory(card.title)}
-                          className={`flex items-center gap-3 p-3 rounded-lg border ${
-                            selectedCategory === card.title
-                              ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20'
-                              : 'border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-700'
-                          }`}
-                        >
-                          <div className={`rounded-lg ${card.color} p-2`}>
-                            <card.icon className="h-5 w-5" />
-                          </div>
-                          <div className="text-left">
-                            <p className="text-sm font-medium text-gray-900 dark:text-white">
-                              {card.title}
-                            </p>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {selectedCategory && (
-                    <>
-                      <div className="flex gap-4 mb-6">
-                        <button
-                          onClick={() => setAddType('file')}
-                          className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium ${
-                            addType === 'file'
-                              ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
-                              : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
-                          }`}
-                        >
-                          Upload File
-                        </button>
-                        <button
-                          onClick={() => setAddType('url')}
-                          className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium ${
-                            addType === 'url'
-                              ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
-                              : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
-                          }`}
-                        >
-                          Add URL
-                        </button>
-                      </div>
-                      
-                      {addType === 'file' ? (
-                        <div
-                          onDragEnter={handleDrag}
-                          onDragLeave={handleDrag}
-                          onDragOver={handleDrag}
-                          onDrop={handleDrop}
-                          className={`mt-2 flex justify-center rounded-lg border border-dashed border-gray-300 dark:border-gray-700 px-6 py-10 ${
-                            dragActive ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20' : ''
-                          }`}
-                        >
-                          <div className="text-center">
-                            <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                            <div className="mt-4 flex text-sm leading-6 text-gray-600 dark:text-gray-400">
-                              <label
-                                htmlFor="file-upload"
-                                className="relative cursor-pointer rounded-md font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500"
-                              >
-                                <span>Upload a file</span>
-                                <input
-                                  id="file-upload"
-                                  name="file-upload"
-                                  type="file"
-                                  className="sr-only"
-                                  onChange={handleFileSelect}
-                                />
-                              </label>
-                              <p className="pl-1">or drag and drop</p>
-                            </div>
-                            {selectedFile && (
-                              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                                Selected: {selectedFile.name}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="mt-2">
-                          <input
-                            type="url"
-                            placeholder="Enter URL"
-                            value={url}
-                            onChange={(e) => setUrl(e.target.value)}
-                            className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          />
-                        </div>
-                      )}
-                    </>
-                  )}
-                  
-                  <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                    <button
-                      type="button"
-                      className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
-                      onClick={handleAdd}
-                      disabled={!selectedCategory || (addType === 'file' && !selectedFile) || (addType === 'url' && !url.trim())}
-                    >
-                      Add
-                    </button>
-                    <button
-                      type="button"
-                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-gray-800 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 sm:mt-0 sm:w-auto"
-                      onClick={resetModal}
-                    >
-                      Cancel
-                    </button>
-                  </div>
+              {addType === 'file' ? (
+                <div
+                  className={`border-2 border-dashed rounded-lg p-4 text-center ${
+                    dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+                  }`}
+                  onDragEnter={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDragOver={handleDrag}
+                  onDrop={handleDrop}
+                >
+                  <input
+                    type="file"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                    id="fileInput"
+                    disabled={isUploading}
+                  />
+                  <label
+                    htmlFor="fileInput"
+                    className="cursor-pointer flex flex-col items-center space-y-2"
+                  >
+                    <Upload className="w-8 h-8 text-gray-400" />
+                    <span className="text-sm text-gray-500">
+                      {selectedFile
+                        ? selectedFile.name
+                        : "Drag and drop or click to select a file"}
+                    </span>
+                  </label>
                 </div>
-              </div>
+              ) : (
+                <input
+                  type="url"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="Enter URL"
+                  className="w-full p-2 border rounded-md"
+                  disabled={isUploading}
+                />
+              )}
+
+              {uploadError && (
+                <div className="text-red-500 text-sm mt-2">{uploadError}</div>
+              )}
+
+              <button
+                onClick={handleAdd}
+                disabled={isUploading || (addType === 'file' ? !selectedFile : !url)}
+                className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+              >
+                {isUploading ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                    Uploading...
+                  </div>
+                ) : (
+                  'Add'
+                )}
+              </button>
             </div>
           </div>
         </div>
