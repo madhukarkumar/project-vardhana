@@ -1,7 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
-import { Bot } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 import { useAuth } from '../hooks/useAuth';
 
 export const Home: React.FC = () => {
