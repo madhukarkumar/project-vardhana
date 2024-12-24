@@ -47,8 +47,10 @@ export const Home = () => {
           <BackgroundPattern />
         </div>
 
-        {/* Meteors */}
-        <Meteors number={20} />
+        {/* Meteors Effect */}
+        <div className="absolute inset-0 overflow-hidden">
+          <Meteors number={40} />
+        </div>
 
         {/* Content */}
         <div className="relative z-10 max-w-5xl mx-auto">
