@@ -1,61 +1,53 @@
-import React from 'react';
-import { Plus } from 'lucide-react';
-import { LucideIcon } from 'lucide-react';
-import { Card } from '../ui/Card';
+import { Bot } from 'lucide-react';
 
 interface WorkflowNodeProps {
-  id: string;
+  position: { x: number; y: number };
   title: string;
   description: string;
-  icon: LucideIcon;
-  position: { x: number; y: number };
-  isDragged: boolean;
-  onMouseDown: (e: React.MouseEvent) => void;
-  onClick: () => void;
-  onStartConnection: (e: React.MouseEvent) => void;
+  isDragged?: boolean;
+  onMouseDown?: (e: React.MouseEvent) => void;
+  onClick?: () => void;
+  onStartConnection?: (e: React.MouseEvent) => void;
 }
 
 export function WorkflowNode({
-  id,
+  position,
   title,
   description,
-  icon: Icon,
-  position,
   isDragged,
   onMouseDown,
   onClick,
   onStartConnection
 }: WorkflowNodeProps) {
   return (
-    <Card
-      onMouseDown={onMouseDown}
-      onClick={onClick}
-      className={`absolute w-[300px] cursor-move hover:border-indigo-500 ${
-        isDragged ? 'border-indigo-500' : ''
+    <div
+      className={`absolute w-60 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 cursor-move hover:shadow-lg transition-shadow ${
+        isDragged ? 'opacity-50' : ''
       }`}
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
-        zIndex: isDragged ? 10 : 1
       }}
+      onMouseDown={onMouseDown}
+      onClick={onClick}
     >
-      <Card.Body>
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/30">
-            <Icon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-white">{title}</h3>
-            <p className="text-xs text-gray-600 dark:text-gray-400">{description}</p>
-          </div>
-          <button
-            onMouseDown={onStartConnection}
-            className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            <Plus className="h-4 w-4 text-gray-600 dark:text-gray-400" />
-          </button>
+      <div className="flex items-center gap-3">
+        <div className="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-900">
+          <Bot className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
         </div>
-      </Card.Body>
-    </Card>
+        <div className="flex-1">
+          <h3 className="text-sm font-medium text-gray-900 dark:text-white">{title}</h3>
+          <p className="text-xs text-gray-600 dark:text-gray-400">{description}</p>
+        </div>
+        {onStartConnection && (
+          <button
+            onClick={onStartConnection}
+            className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            <Bot className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+          </button>
+        )}
+      </div>
+    </div>
   );
 }

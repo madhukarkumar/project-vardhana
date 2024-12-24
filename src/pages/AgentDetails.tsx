@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Bot, Database, Wrench, Brain, Play, ArrowLeft, Plus, X } from 'lucide-react';
+import { Database, Wrench, Brain, Play, ArrowLeft, Plus, X } from 'lucide-react';
 
 const llmOptions = [
   { id: 'openai', name: 'OpenAI 01', description: 'Most capable model, best for complex tasks' },
@@ -23,6 +23,10 @@ export function AgentDetails() {
   const [newDataSource, setNewDataSource] = useState('');
   const [selectedTools, setSelectedTools] = useState<string[]>([]);
   const [isTraining, setIsTraining] = useState(false);
+
+  useEffect(() => {
+    console.log('Fetching agent details for ID:', id);
+  }, [id]);
 
   const handleAddDataSource = () => {
     if (newDataSource.trim()) {

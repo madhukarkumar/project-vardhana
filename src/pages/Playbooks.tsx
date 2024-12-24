@@ -1,57 +1,67 @@
 import React from 'react';
-import { Plus, Search, Filter, Play, Pause, Archive, MoreVertical } from 'lucide-react';
+import { Plus, Search, Filter, Play, Pause, Archive, MoreVertical, type LucideIcon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 
-const playbooks = [
+interface Playbook {
+  id: number;
+  name: string;
+  description: string;
+  status: PlaybookStatus;
+  lastModified: string;
+  steps?: number;
+  completedSteps?: number;
+  lastRun?: string;
+}
+
+const playbooks: Playbook[] = [
   {
     id: 1,
-    name: 'Social Media Growth',
-    description: 'Automated social media engagement and growth strategy',
+    name: 'Lead Generation',
+    description: 'Automated lead generation workflow',
     status: 'active',
+    lastModified: '2 hours ago',
     steps: 8,
     completedSteps: 3,
     lastRun: '2 hours ago',
   },
   {
     id: 2,
-    name: 'Content Distribution',
-    description: 'Multi-channel content distribution workflow',
+    name: 'Content Creation',
+    description: 'AI-powered content creation pipeline',
     status: 'draft',
+    lastModified: '1 day ago',
     steps: 12,
     completedSteps: 0,
     lastRun: 'Never',
   },
   {
     id: 3,
-    name: 'Stage 3 Pipeline Generation',
-    description: 'B2B lead generation and qualification process',
-    status: 'active',
-    steps: 6,
-    completedSteps: 4,
-    lastRun: '1 day ago',
-  },
-  {
-    id: 4,
-    name: 'Email Nurture',
-    description: 'Customer nurture email campaign sequence',
+    name: 'Email Campaign',
+    description: 'Automated email marketing workflow',
     status: 'archived',
+    lastModified: '1 week ago',
     steps: 10,
     completedSteps: 10,
     lastRun: '1 month ago',
   },
 ];
 
-const statusColors = {
-  active: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-  draft: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-  archived: 'bg-gray-100 text-gray-800 dark:bg-gray-800/30 dark:text-gray-300',
-};
+type PlaybookStatus = 'active' | 'draft' | 'archived';
 
-const statusIcons = {
+type StatusIconsType = Record<PlaybookStatus, LucideIcon>;
+type StatusColorsType = Record<PlaybookStatus, string>;
+
+const statusIcons: StatusIconsType = {
   active: Play,
   draft: Pause,
   archived: Archive,
+};
+
+const statusColors: StatusColorsType = {
+  active: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+  draft: 'bg-gray-100 text-gray-800 dark:bg-gray-800/30 dark:text-gray-300',
+  archived: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
 };
 
 export function Playbooks() {
@@ -95,7 +105,7 @@ export function Playbooks() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {playbooks.map((playbook) => {
-          const StatusIcon = statusIcons[playbook.status];
+          const StatusIcon = statusIcons[playbook.status as PlaybookStatus];
           return (
             <Card
               key={playbook.id}
@@ -118,24 +128,26 @@ export function Playbooks() {
                   >
                     {playbook.name}
                   </Link>
-                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[playbook.status]}`}>
+                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[playbook.status as PlaybookStatus]}`}>
                     {playbook.status.charAt(0).toUpperCase() + playbook.status.slice(1)}
                   </span>
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{playbook.description}</p>
                 
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Progress</span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    {playbook.completedSteps} of {playbook.steps} steps
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-indigo-600 dark:bg-indigo-500"
+                      style={{
+                        width: `${playbook.steps && playbook.completedSteps ? (playbook.completedSteps / playbook.steps * 100) : 0}%`
+                      }}
+                    />
+                  </div>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    {playbook.steps && playbook.completedSteps ? `${playbook.completedSteps}/${playbook.steps}` : 'No steps'}
                   </span>
                 </div>
-                <div className="h-2 w-full rounded-full bg-gray-100 dark:bg-gray-700/50 mb-4">
-                  <div
-                    className="h-2 rounded-full bg-primary-600"
-                    style={{ width: `${(playbook.completedSteps / playbook.steps) * 100}%` }}
-                  />
-                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Last run: {playbook.lastRun || 'Never'}</p>
 
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">

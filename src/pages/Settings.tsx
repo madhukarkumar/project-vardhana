@@ -2,9 +2,6 @@ import React from 'react';
 import { 
   Puzzle, 
   User, 
-  Mail, 
-  Building, 
-  Globe, 
   Twitter, 
   Linkedin,
   Github,

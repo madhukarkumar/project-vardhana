@@ -53,7 +53,6 @@ export function CommandCenter() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [newMessage, setNewMessage] = useState('');
   const [nodes, setNodes] = useState<WorkflowNode[]>(initialNodes);
-  const [isDragging, setIsDragging] = useState(false);
   const [draggedNode, setDraggedNode] = useState<WorkflowNode | null>(null);
   const [connections, setConnections] = useState<Connection[]>([]);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -67,19 +66,21 @@ export function CommandCenter() {
     setNewMessage('');
   };
 
-  const handleDragStart = (e: React.DragEvent, template?: any) => {
-    setIsDragging(true);
-    if (template) {
-      const newNode = {
+  const handleDragStart = (e: React.DragEvent, nodeOrTemplate: WorkflowNode | typeof nodeTemplates[0]) => {
+    e.preventDefault();
+    if ('position' in nodeOrTemplate) {
+      // It's a WorkflowNode
+      setDraggedNode(nodeOrTemplate);
+    } else {
+      // It's a template
+      const newNode: WorkflowNode = {
         id: Math.random().toString(36).substr(2, 9),
-        ...template,
+        type: nodeOrTemplate.type,
+        title: nodeOrTemplate.title,
+        description: nodeOrTemplate.description,
         position: { x: 0, y: 0 }
       };
       setDraggedNode(newNode);
-    } else {
-      const nodeId = e.currentTarget.getAttribute('data-node-id');
-      const node = nodes.find(n => n.id === nodeId);
-      if (node) setDraggedNode(node);
     }
   };
 
@@ -118,7 +119,6 @@ export function CommandCenter() {
       return [...prev, newNode];
     });
 
-    setIsDragging(false);
     setDraggedNode(null);
   }, [draggedNode]);
 
@@ -268,7 +268,7 @@ export function CommandCenter() {
               key={node.id}
               data-node-id={node.id}
               draggable
-              onDragStart={(e) => handleDragStart(e)}
+              onDragStart={(e) => handleDragStart(e, node)}
               onClick={() => handleNodeClick(node.id)}
               className="absolute w-60 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 cursor-move hover:shadow-lg transition-shadow"
               style={{

@@ -58,8 +58,8 @@ export function WorkflowCanvas({
         })}
         {connectionStart && (
           <line
-            x1={nodes.find(n => n.id === connectionStart)?.position.x + 150}
-            y1={nodes.find(n => n.id === connectionStart)?.position.y + 50}
+            x1={(nodes.find(n => n.id === connectionStart)?.position?.x ?? 0) + 150}
+            y1={(nodes.find(n => n.id === connectionStart)?.position?.y ?? 0) + 50}
             x2={mousePosition.x}
             y2={mousePosition.y}
             stroke="#6366f1"

@@ -1,5 +1,4 @@
-import { Link } from 'react-router-dom';
-import { Bot, Zap, TrendingUp, DollarSign, Target, CheckCircle, Database, BookOpen, ChevronRight } from 'lucide-react';
+import { Bot, Zap, DollarSign, Target, CheckCircle } from 'lucide-react';
 import { StatsCard } from '../components/dashboard/StatsCard';
 import { Card } from '../components/ui/Card';
 import { PerformanceCharts } from '../components/dashboard/PerformanceCharts';

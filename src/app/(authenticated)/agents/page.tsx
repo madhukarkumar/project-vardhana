@@ -1,7 +1,16 @@
 import { Plus, Search, Filter } from 'lucide-react';
 import AgentCard from '@/components/agents/AgentCard';
 
-const agents = [
+interface Agent {
+  id: number;
+  name: string;
+  type: string;
+  status: 'active' | 'inactive' | 'training';
+  description: string;
+  successRate: number;
+}
+
+const agents: Agent[] = [
   {
     id: 1,
     name: 'Social Media Manager',

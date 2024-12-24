@@ -100,12 +100,10 @@ export function Knowledge() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [url, setUrl] = useState('');
   const [addType, setAddType] = useState<'file' | 'url'>('file');
-  const [selectedCategory, setSelectedCategory] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
   // Graph ref for accessing graph methods
-  const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [highlightNodes, setHighlightNodes] = useState(new Set<string>());
   const [graphDimensions, setGraphDimensions] = useState({
     width: window.innerWidth - (isChatOpen ? 484 : 100),
@@ -351,10 +349,6 @@ export function Knowledge() {
     localStorage.removeItem('chatMessages');
   };
 
-  const handleNodeClick = useCallback((node: GraphNode) => {
-    setSelectedNode(node.id);
-  }, []);
-
   const handleNodeHover = useCallback((node: GraphNode | null) => {
     if (node) {
       const neighbors = new Set<string>();
@@ -402,9 +396,8 @@ export function Knowledge() {
             linkDirectionalParticleSpeed={0.005}
             d3VelocityDecay={0.3}
             cooldownTime={2000}
-            onNodeClick={handleNodeClick}
             onNodeHover={handleNodeHover}
-            nodeCanvasObject={(node: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
+            nodeCanvasObject={(node: any, ctx: CanvasRenderingContext2D) => {
               const label = node.id;
               const fontSize = node.group === 1 ? 16 : 12;
               ctx.font = `${fontSize}px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;

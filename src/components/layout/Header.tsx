@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { Bell, Search, User, Moon, Sun, Menu, LogOut } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
 
