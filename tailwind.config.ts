@@ -1,56 +1,33 @@
-import type { Config } from 'tailwindcss';
+import type { Config } from "tailwindcss";
 
-const config: Config = {
+export default {
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: 'class',
   theme: {
     extend: {
-      fontFamily: {
-        sans: ['Source Sans Pro', 'sans-serif'],
+      animation: {
+        "meteor-effect": "meteor 5s linear infinite",
       },
-      colors: {
-        primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
-          950: '#082f49',
-        },
-        background: {
-          DEFAULT: '#ffffff',
-          dark: '#141414',
-          secondary: {
-            light: '#ffffff',
-            dark: '#111111'
+      keyframes: {
+        meteor: {
+          "0%": { transform: "rotate(215deg) translateX(0)", opacity: "1" },
+          "70%": { opacity: "1" },
+          "100%": {
+            transform: "rotate(215deg) translateX(-500px)",
+            opacity: "0",
           },
-          card: {
-            light: '#ffffff',
-            dark: '#000000'
-          }
         },
-        border: {
-          card: {
-            light: '#e5e7eb',
-            dark: 'rgba(255, 255, 255, 0.1)'
-          }
-        }
       },
-      backdropBlur: {
-        'xs': '2px'
-      }
+      backgroundImage: {
+        "grid-white":
+          "linear-gradient(to right, rgb(255 255 255 / 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgb(255 255 255 / 0.1) 1px, transparent 1px)",
+      },
+      backgroundSize: {
+        "grid-white": "80px 80px",
+      },
     },
   },
   plugins: [],
-}
-
-export default config;
+} satisfies Config;

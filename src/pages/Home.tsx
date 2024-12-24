@@ -1,509 +1,98 @@
-import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
-import { useAuth } from '../hooks/useAuth';
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { IconArrowRight } from "@tabler/icons-react";
+import { BackgroundPattern } from "../components/ui/BackgroundPattern";
+import { AnimatedText } from "../components/ui/AnimatedText";
+import { Meteors } from "../components/ui/Meteors";
+import { useAuth } from "../hooks/useAuth";
 
-export const Home: React.FC = () => {
+export const Home = () => {
   const navigate = useNavigate();
   const { session } = useAuth();
 
   return (
-    <Container>
-      <Header>
-        <Logo>Robynn</Logo>
-        <NavActions>
+    <div className="min-h-screen w-full bg-black antialiased bg-grid-white/[0.02] relative overflow-hidden">
+      {/* Radial gradient for the container to give a faded look */}
+      <div className="absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-black [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
+      
+      {/* Ambient light effect */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/30 via-purple-500/30 to-pink-500/30 opacity-0 transition duration-500 group-hover:opacity-100" />
+      
+      {/* Header */}
+      <header className="relative z-50 flex justify-between items-center px-4 py-3 md:px-6 md:py-4">
+        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-500">Robynn</h1>
+        <div>
           {!session ? (
-            <LoginButton onClick={() => navigate('/login')}>
+            <button
+              onClick={() => navigate("/login")}
+              className="px-4 py-2 rounded-md text-sm font-medium bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 transition-colors"
+            >
               Login
-            </LoginButton>
+            </button>
           ) : (
-            <LoginButton onClick={() => navigate('/dashboard')}>
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="px-4 py-2 rounded-md text-sm font-medium bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 transition-colors"
+            >
               Dashboard
-            </LoginButton>
+            </button>
           )}
-        </NavActions>
-      </Header>
+        </div>
+      </header>
 
-      <MainContent>
-        <Shapes>
-          <OrangeCircle />
-          <BlueCircle />
-          <GreenCircle />
-          <PurpleSemiCircle />
-          <GreenSemiCircle />
-          <OrangeTriangle />
-          <BlueTriangle />
-        </Shapes>
+      {/* Main Content */}
+      <main className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-4">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 overflow-hidden">
+          <BackgroundPattern />
+        </div>
 
-        <HeroText>
-          <span style={{ position: 'relative' }}>
-            <BuildArrowShape>
-              <svg width="200" height="80" viewBox="0 0 200 80">
-                <g>
-                  <circle cx="20" cy="40" r="18" fill="none" stroke="black" strokeWidth="3"/>
-                  <line x1="40" y1="40" x2="120" y2="40" stroke="black" strokeWidth="3"/>
-                  <circle cx="160" cy="40" r="40" fill="#ff6b35"/>
-                  <path d="M140 40 L180 40 L160 20" stroke="black" strokeWidth="3" fill="none"/>
-                </g>
-              </svg>
-            </BuildArrowShape>
-            growth.
-          </span>
-          <span>engineered.</span>
-          <span>your very own personal </span>
-          <UnderlinedSpan>
-            agentic CMO <GearIcon>⚙️</GearIcon>
-            <Underline />
-          </UnderlinedSpan>
-        </HeroText>
+        {/* Meteors */}
+        <Meteors number={20} />
 
-        <Description>
-          Robynn is a marketing platform built by marketers for marketers.
-        </Description>
+        {/* Content */}
+        <div className="relative z-10 max-w-5xl mx-auto">
+          <div className="flex flex-col items-center gap-4 text-center">
+            <AnimatedText
+              text="Your Personal"
+              className="text-4xl md:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/50"
+              delay={0.2}
+            />
+            <AnimatedText
+              text="Marketing Assistant"
+              className="text-4xl md:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/50"
+              delay={0.4}
+            />
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+              className="mt-4 text-neutral-300 max-w-xl mx-auto text-center text-lg"
+            >
+              Robynn is a marketing platform built by marketers for marketers.
+            </motion.div>
 
-        <ButtonWrapper>
-          <ShimmerButton onClick={() => navigate('/login')}>
-            Get Started
-          </ShimmerButton>
-        </ButtonWrapper>
-
-        <YellowSliderShape>
-          <svg width="300" height="100" viewBox="0 0 300 100">
-            <g>
-              <rect width="300" height="80" rx="40" fill="#fbbc05"/>
-              <circle cx="100" cy="40" r="25" fill="#ff6b35"/>
-              <circle cx="250" cy="40" r="30" fill="white"/>
-              <line x1="40" y1="40" x2="80" y2="40" stroke="black" strokeWidth="3" strokeDasharray="6 6"/>
-            </g>
-          </svg>
-        </YellowSliderShape>
-      </MainContent>
-    </Container>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.5 }}
+              className="mt-8"
+            >
+              <button
+                onClick={() => navigate("/login")}
+                className="group relative inline-flex items-center gap-2 px-6 py-3 text-lg font-semibold text-white bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full hover:opacity-90 transition-all duration-300"
+              >
+                Get Started
+                <IconArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                <div className="absolute -inset-1 -z-10 blur-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-50 group-hover:opacity-75 transition-opacity duration-300" />
+              </button>
+            </motion.div>
+          </div>
+        </div>
+      </main>
+    </div>
   );
 };
 
-const Container = styled.div`
-  padding: 0.5rem;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #fff5f2 0%, #fff7f7 100%);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  overflow-x: hidden;
-  
-  @media (min-width: 768px) {
-    padding: 1rem;
-  }
-`;
-
-const Header = styled.header`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem;
-  position: relative;
-  z-index: 10;
-  
-  @media (min-width: 768px) {
-    padding: 0.75rem 1.5rem;
-  }
-`;
-
-const Logo = styled.div`
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1a1a1a;
-`;
-
-const NavActions = styled.div`
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-`;
-
-const BaseShimmerButton = styled.button`
-  position: relative;
-  padding: 0.75rem 2rem;
-  background: linear-gradient(
-    to right,
-    #1a1a1a,
-    #333
-  );
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-  overflow: hidden;
-  transform: translateZ(0);
-  transition: all 0.2s ease;
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      to right,
-      transparent,
-      rgba(255, 255, 255, 0.2) 20%,
-      rgba(255, 255, 255, 0.3) 50%,
-      rgba(255, 255, 255, 0.2) 80%,
-      transparent
-    );
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    transform: translateX(-100%) skewX(-15deg);
-  }
-
-  &:hover {
-    background: linear-gradient(
-      to right,
-      #333,
-      #404040
-    );
-  }
-
-  &:hover::before {
-    opacity: 1;
-    animation: shimmer 2s infinite;
-  }
-
-  @keyframes shimmer {
-    0% {
-      transform: translateX(-100%) skewX(-15deg);
-    }
-    100% {
-      transform: translateX(200%) skewX(-15deg);
-    }
-  }
-`;
-
-const LoginButton = styled(BaseShimmerButton)`
-  font-size: 0.875rem;
-  padding: 0.5rem 1.5rem;
-  z-index: 10;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-`;
-
-const ShimmerButton = styled(BaseShimmerButton)`
-  font-size: 0.875rem;
-  z-index: 10;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  
-  @media (min-width: 480px) {
-    font-size: 1rem;
-  }
-`;
-
-const MainContent = styled.main`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem;
-  position: relative;
-  min-height: calc(100vh - 80px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  
-  @media (min-width: 768px) {
-    padding: 2rem;
-    min-height: calc(100vh - 100px);
-  }
-`;
-
-const HeroText = styled.h1`
-  font-size: 2.5rem;
-  font-weight: 700;
-  line-height: 1.1;
-  color: #1a1a1a;
-  margin: 0;
-  position: relative;
-  z-index: 10;
-  padding-left: 20px;
-  
-  span {
-    display: block;
-  }
-  
-  @media (min-width: 480px) {
-    font-size: 3rem;
-    padding-left: 100px;
-  }
-  
-  @media (min-width: 768px) {
-    font-size: 5rem;
-    padding-left: 180px;
-  }
-  
-  @media (min-width: 1024px) {
-    font-size: 6.5rem;
-    padding-left: 220px;
-  }
-`;
-
-const Description = styled.p`
-  margin-top: 1.5rem;
-  font-size: 0.875rem;
-  max-width: 300px;
-  color: #4a4a4a;
-  position: relative;
-  z-index: 10;
-  padding-left: 20px;
-  
-  @media (min-width: 480px) {
-    padding-left: 100px;
-    font-size: 1rem;
-    max-width: 350px;
-  }
-  
-  @media (min-width: 768px) {
-    padding-left: 180px;
-    font-size: 1.1rem;
-    max-width: 400px;
-    margin-top: 2rem;
-  }
-`;
-
-const Shapes = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0.5;
-  
-  @media (min-width: 768px) {
-    opacity: 0.7;
-  }
-`;
-
-const OrangeCircle = styled.div`
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  background: #ff6b35;
-  border-radius: 50%;
-  right: 10%;
-  top: 10%;
-  
-  @media (min-width: 768px) {
-    width: 50px;
-    height: 50px;
-    right: 25%;
-    top: 10%;
-  }
-  
-  @media (min-width: 1024px) {
-    width: 60px;
-    height: 60px;
-    right: 30%;
-    top: 10%;
-  }
-`;
-
-const BlueCircle = styled.div`
-  position: absolute;
-  width: 25px;
-  height: 25px;
-  background: #4285f4;
-  border-radius: 50%;
-  right: 80%;
-  top: 25%;
-  
-  @media (min-width: 768px) {
-    width: 35px;
-    height: 35px;
-    right: 45%;
-    top: 30%;
-  }
-  
-  @media (min-width: 1024px) {
-    width: 40px;
-    height: 40px;
-    right: 90%;
-    top: 35%;
-  }
-`;
-
-const GreenCircle = styled.div`
-  position: absolute;
-  width: 35px;
-  height: 35px;
-  background: #34a853;
-  border-radius: 50%;
-  right: 15%;
-  top: 40%;
-  
-  @media (min-width: 768px) {
-    width: 45px;
-    height: 45px;
-    right: 20%;
-    top: 45%;
-  }
-`;
-
-const PurpleSemiCircle = styled.div`
-  position: absolute;
-  width: 60px;
-  height: 30px;
-  background: #a142f4;
-  border-radius: 30px 30px 0 0;
-  right: 20%;
-  top: 50%;
-  transform: rotate(-15deg);
-  
-  @media (min-width: 768px) {
-    width: 80px;
-    height: 40px;
-    right: 10%;
-    top: 55%;
-  }
-`;
-
-const GreenSemiCircle = styled.div`
-  position: absolute;
-  width: 60px;
-  height: 30px;
-  background: #34a853;
-  border-radius: 30px 30px 0 0;
-  right: 5%;
-  top: 60%;
-  transform: rotate(15deg);
-  
-  @media (min-width: 768px) {
-    width: 80px;
-    height: 40px;
-    right: 10%;
-    top: 65%;
-  }
-`;
-
-const OrangeTriangle = styled.div`
-  position: absolute;
-  width: 0;
-  height: 0;
-  border-left: 20px solid transparent;
-  border-right: 20px solid transparent;
-  border-bottom: 35px solid #ff6b35;
-  right: 40%;
-  bottom: 30%;
-  
-  @media (min-width: 768px) {
-    border-left: 30px solid transparent;
-    border-right: 30px solid transparent;
-    border-bottom: 52px solid #ff6b35;
-    right: 35%;
-    bottom: 25%;
-  }
-`;
-
-const BlueTriangle = styled.div`
-  position: absolute;
-  width: 0;
-  height: 0;
-  border-left: 20px solid transparent;
-  border-right: 20px solid transparent;
-  border-bottom: 35px solid #4285f4;
-  right: 1%;
-  bottom: 40%;
-  transform: rotate(-15deg);
-  
-  @media (min-width: 768px) {
-    border-left: 30px solid transparent;
-    border-right: 30px solid transparent;
-    border-bottom: 52px solid #4285f4;
-    right: 1%;
-    bottom: 35%;
-  }
-`;
-
-const YellowSliderShape = styled.div`
-  position: absolute;
-  right: 5%;
-  top: 70%;
-  z-index: 1;
-  width: 150px;
-  height: 50px;
-  transform: scale(0.8);
-  
-  @media (min-width: 768px) {
-    right: 10%;
-    top: 75%;
-    width: 250px;
-    height: 84px;
-    transform: scale(0.9);
-  }
-  
-  @media (min-width: 1024px) {
-    right: 15%;
-    top: 80%;
-    width: 300px;
-    height: 100px;
-    transform: scale(1);
-  }
-`;
-
-const UnderlinedSpan = styled.span`
-  position: relative;
-  display: inline-block;
-`;
-
-const Underline = styled.div`
-  position: absolute;
-  bottom: -10px;
-  left: 0;
-  width: 100px;
-  height: 3px;
-  background-color: #000;
-`;
-
-const BuildArrowShape = styled.div`
-  position: absolute;
-  left: -10px;
-  top: 60px;
-  z-index: 10;
-  width: 80px;
-  height: 32px;
-  transform: scale(0.7);
-  
-  @media (min-width: 480px) {
-    left: -80px;
-    width: 120px;
-    height: 48px;
-    transform: scale(0.8);
-  }
-  
-  @media (min-width: 768px) {
-    width: 160px;
-    height: 64px;
-    left: -160px;
-    top: 80px;
-    transform: scale(0.9);
-  }
-  
-  @media (min-width: 1024px) {
-    width: 200px;
-    height: 80px;
-    left: -200px;
-    top: 100px;
-    transform: scale(1);
-  }
-`;
-
-const GearIcon = styled.span`
-  display: inline-block;
-  margin-left: 1rem;
-`;
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  padding-left: 20px;
-  margin-top: 2rem;
-  
-  @media (min-width: 480px) {
-    padding-left: 100px;
-  }
-  
-  @media (min-width: 768px) {
-    padding-left: 180px;
-  }
-`;
+export default Home;
