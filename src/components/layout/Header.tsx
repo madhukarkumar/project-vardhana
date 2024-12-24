@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Bell, Search, User, Moon, Sun, Menu, LogOut } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
-import { BirdLogo } from '../icons/BirdLogo';
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -34,12 +33,6 @@ export function Header({ toggleSidebar, onLogout }: HeaderProps) {
         >
           <Menu className="h-5 w-5" />
         </button>
-        <div className="flex items-center gap-2">
-          <BirdLogo className="h-8 w-8 text-primary-600" />
-          <span className="text-xl font-semibold text-gray-900 dark:text-white hidden sm:block">
-            Robynn
-          </span>
-        </div>
         <div className="relative max-w-md flex-1 hidden sm:block">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <input

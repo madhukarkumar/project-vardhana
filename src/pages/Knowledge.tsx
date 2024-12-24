@@ -16,6 +16,8 @@ interface GraphNode {
   id: string;
   group: number;
   color: string;
+  x?: number;
+  y?: number;
 }
 
 interface GraphLink {
@@ -26,6 +28,17 @@ interface GraphLink {
 interface GraphData {
   nodes: GraphNode[];
   links: GraphLink[];
+}
+
+interface GraphDimensions {
+  width: number;
+  height: number;
+}
+
+// For better type safety, we can also create a runtime node type
+interface RuntimeGraphNode extends GraphNode {
+  x: number;
+  y: number;
 }
 
 // Define links
@@ -105,22 +118,36 @@ export function Knowledge() {
 
   // Graph ref for accessing graph methods
   const [highlightNodes, setHighlightNodes] = useState(new Set<string>());
-  const [graphDimensions, setGraphDimensions] = useState({
-    width: window.innerWidth - (isChatOpen ? 484 : 100),
-    height: window.innerHeight - 200
+  const [graphDimensions, setGraphDimensions] = useState<GraphDimensions>({
+    width: 0,
+    height: 0
   });
 
   // Update graph dimensions when chat sidebar or window size changes
   useEffect(() => {
-    const handleResize = () => {
+    const updateDimensions = () => {
+      const containerWidth = window.innerWidth - (isChatOpen ? 384 : 0);
+      const containerHeight = window.innerHeight - 200;
+      
       setGraphDimensions({
-        width: window.innerWidth - (isChatOpen ? 484 : 100),
-        height: window.innerHeight - 200
+        width: Math.max(containerWidth - 48, 0),
+        height: Math.max(containerHeight, 400)
       });
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    // Initial update
+    updateDimensions();
+
+    // Update on window resize
+    window.addEventListener('resize', updateDimensions);
+    
+    // Update when chat opens/closes
+    const timeout = setTimeout(updateDimensions, 300);
+
+    return () => {
+      window.removeEventListener('resize', updateDimensions);
+      clearTimeout(timeout);
+    };
   }, [isChatOpen]);
 
   // Save messages to localStorage whenever they change
@@ -380,13 +407,13 @@ export function Knowledge() {
         </div>
 
         {/* Knowledge Graph */}
-        <div className="rounded-lg bg-gray-900 p-4 relative min-h-[600px]">
+        <div className="rounded-lg bg-gray-900 p-4 relative min-h-[600px] overflow-hidden">
           <ForceGraph2D
             graphData={graphData}
             width={graphDimensions.width}
             height={graphDimensions.height}
             nodeRelSize={6}
-            nodeColor={(node: any) => node.color}
+            nodeColor={(node: GraphNode) => node.color}
             linkColor={() => '#4b5563'}
             backgroundColor="#111827"
             nodeLabel="id"
@@ -398,19 +425,21 @@ export function Knowledge() {
             cooldownTime={2000}
             onNodeHover={handleNodeHover}
             nodeCanvasObject={(node: any, ctx: CanvasRenderingContext2D) => {
-              const label = node.id;
-              const fontSize = node.group === 1 ? 16 : 12;
+              const graphNode = node as RuntimeGraphNode;
+              const label = graphNode.id;
+              const fontSize = graphNode.group === 1 ? 16 : 12;
               ctx.font = `${fontSize}px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
-              ctx.fillStyle = highlightNodes.has(node.id) ? '#f59e0b' : '#fff';
+              ctx.fillStyle = highlightNodes.has(graphNode.id) ? '#f59e0b' : '#fff';
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
-              ctx.fillText(label, node.x, node.y);
+              ctx.fillText(label, graphNode.x, graphNode.y);
             }}
             nodePointerAreaPaint={(node: any, color: string, ctx: CanvasRenderingContext2D) => {
+              const graphNode = node as RuntimeGraphNode;
               ctx.fillStyle = color;
-              const size = node.group === 1 ? 12 : 8;
+              const size = graphNode.group === 1 ? 12 : 8;
               ctx.beginPath();
-              ctx.arc(node.x, node.y, size, 0, 2 * Math.PI);
+              ctx.arc(graphNode.x, graphNode.y, size, 0, 2 * Math.PI);
               ctx.fill();
             }}
           />
