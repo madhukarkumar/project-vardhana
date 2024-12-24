@@ -47,7 +47,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
           </div>
           <button
             onClick={toggleSidebar}
-            className="p-1 hover:bg-gray-100 dark:hover:bg-background-card-dark rounded-lg hidden lg:block"
+            className="p-1 hover:bg-gray-200 dark:hover:bg-background-card-dark rounded-lg hidden lg:block"
           >
             {isOpen ? (
               <ChevronLeft className="h-5 w-5" />
@@ -63,7 +63,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-background-card-light dark:hover:bg-background-card-dark hover:text-primary-600 dark:hover:text-primary-400 group transition-colors ${
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-background-card-dark hover:text-primary-600 dark:hover:text-primary-400 group transition-all hover:scale-105 ${
                   location.pathname === item.href ? 'bg-background-card-light dark:bg-background-card-dark text-primary-600 dark:text-primary-400' : ''
                 }`}
                 title={!isOpen ? item.name : undefined}

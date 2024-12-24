@@ -12,11 +12,11 @@ export default {
           DEFAULT: '#ffffff',
           dark: '#141414',
           secondary: {
-            light: '#ffffff',
+            light: '#e5e5e5',
             dark: '#111111'
           },
           card: {
-            light: '#ffffff',
+            light: '#e5e5e5',
             dark: '#000000'
           }
         },
