@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-  Layout, 
   Home, 
   Bot, 
   BookOpen, 
@@ -10,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
+import { BirdLogo } from '../icons/BirdLogo';
 
 const navigation = [
   { name: 'Command Center', icon: Home, href: '/dashboard' },
@@ -42,12 +42,10 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
         } z-50`}
       >
         <div className="flex h-16 items-center gap-2 px-6 border-b border-border-card-light dark:border-border-card-dark justify-between">
-          <div className="flex items-center gap-2">
-            <Layout className="h-6 w-6 text-primary-600 dark:text-primary-400" />
-            <span className={`text-xl font-semibold transition-opacity duration-300 ${
-              isOpen ? 'opacity-100' : 'opacity-0 hidden'
-            }`}>
-              GrowthOS
+          <div className="flex items-center gap-2 px-4">
+            <BirdLogo className="h-8 w-8 text-primary-600" />
+            <span className="text-xl font-semibold text-gray-900 dark:text-white">
+              Robynn
             </span>
           </div>
           <button
