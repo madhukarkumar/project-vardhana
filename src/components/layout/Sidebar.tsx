@@ -42,11 +42,8 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
         } z-50`}
       >
         <div className="flex h-16 items-center gap-2 px-6 border-b border-border-card-light dark:border-border-card-dark justify-between">
-          <div className="flex items-center gap-2 px-4">
-            <BirdLogo className="h-8 w-8 text-primary-600" />
-            <span className="text-xl font-semibold text-gray-900 dark:text-white">
-              Robynn
-            </span>
+          <div className="flex items-center gap-2">
+            <BirdLogo className="h-8 w-auto text-primary-600" collapsed={!isOpen} />
           </div>
           <button
             onClick={toggleSidebar}
