@@ -5,6 +5,8 @@ import { BackgroundPattern } from "../components/ui/BackgroundPattern";
 import { AnimatedText } from "../components/ui/AnimatedText";
 import { Meteors } from "../components/ui/Meteors";
 import { useAuth } from "../hooks/useAuth";
+import { Features } from "../components/sections/Features";
+import { Testimonials } from "../components/sections/Testimonials";
 
 export const Home = () => {
   const navigate = useNavigate();
@@ -94,6 +96,10 @@ export const Home = () => {
           </div>
         </div>
       </main>
+
+      {/* Additional Sections */}
+      <Features />
+      <Testimonials />
     </div>
   );
 };
