@@ -3,34 +3,29 @@ import { cn } from "@/utils/cn";
 
 const features = [
   {
-    title: "AI-Powered Growth",
-    description: "Leverage advanced AI to automate your marketing and sales processes 24/7",
+    title: "24/7 Growth",
+    description: "Agents that understands your business, improves over time and drives growth 24/7",
     icon: "🚀",
   },
   {
-    title: "Smart Lead Generation",
+    title: "Audience Builder",
     description: "Automatically identify and engage with potential customers across platforms",
     icon: "🎯",
   },
   {
     title: "Personalized Outreach",
-    description: "Create tailored messaging that resonates with your target audience",
+    description: "Create tailored messaging with human in the loop that resonates with your target audience",
     icon: "✉️",
   },
   {
-    title: "Analytics Dashboard",
-    description: "Track performance metrics and optimize your growth strategy in real-time",
+    title: "Live Analytics",
+    description: "View your growth performance in real-time and act on them while it matters",
     icon: "📊",
   },
   {
     title: "Multi-Channel Presence",
     description: "Maintain consistent engagement across all your social platforms",
     icon: "🌐",
-  },
-  {
-    title: "Automated Follow-ups",
-    description: "Never miss an opportunity with intelligent follow-up sequences",
-    icon: "⚡",
   },
 ];
 

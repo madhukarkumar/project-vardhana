@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Plus, X, Send, Bot, MessageSquare, Upload } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import ForceGraph2D from 'react-force-graph-2d';
+import * as d3 from 'd3';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -95,7 +96,15 @@ const graphData: GraphData = {
 const FILE_UPLOAD_WEBHOOK_URL = 'https://madhukar.app.n8n.cloud/webhook/44dc1d91-4557-415c-a167-9599f4feb78a';
 
 export function Knowledge() {
-  const [isChatOpen, setIsChatOpen] = useState(true);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  // Add delayed opening of chat on page load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsChatOpen(true);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
   const [sessionId, setSessionId] = useState<string>('');
   const [newMessage, setNewMessage] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -179,7 +188,7 @@ export function Knowledge() {
 
     const streamInterval = setInterval(() => {
       if (currentIndex < words.length) {
-        setStreamingMessage(prev => prev + (currentIndex === 0 ? '' : ' ') + words[currentIndex]);
+        setStreamingMessage((prev: string) => prev + (currentIndex === 0 ? '' : ' ') + words[currentIndex]);
         currentIndex++;
       } else {
         clearInterval(streamInterval);
@@ -194,7 +203,7 @@ export function Knowledge() {
 
     // Add user message to chat
     const userMessage: Message = { role: 'user', content: newMessage };
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev: Message[]) => [...prev, userMessage]);
     setNewMessage('');
     setIsProcessing(true);
     setStreamingMessage('');
@@ -253,7 +262,7 @@ export function Knowledge() {
       
       // Add message to chat history after streaming completes
       setTimeout(() => {
-        setMessages(prev => [...prev, assistantMessage]);
+        setMessages((prev: Message[]) => [...prev, assistantMessage]);
       }, (content.split(' ').length * 50) + 100); // Wait for streaming to complete
       
     } catch (error) {
@@ -265,7 +274,7 @@ export function Knowledge() {
         role: 'assistant', 
         content: 'Sorry, I encountered an error while processing your message.' 
       };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages((prev: Message[]) => [...prev, errorMessage]);
     } finally {
       setIsProcessing(false);
     }
@@ -421,8 +430,26 @@ export function Knowledge() {
             linkDirectionalParticles={4}
             linkDirectionalParticleWidth={2}
             linkDirectionalParticleSpeed={0.005}
+            cooldownTime={3000}
+            onNodeDragEnd={(node: any) => {
+              // Fix node position after drag
+              node.fx = node.x;
+              node.fy = node.y;
+            }}
+            onNodeDrag={(node: any) => {
+              // Update position during drag
+              node.fx = node.x;
+              node.fy = node.y;
+            }}
+            onNodeClick={(node: any) => {
+              // Release fixed position on click (if already fixed)
+              if (node.fx !== undefined || node.fy !== undefined) {
+                node.fx = undefined;
+                node.fy = undefined;
+              }
+            }}
             d3VelocityDecay={0.3}
-            cooldownTime={2000}
+            d3AlphaDecay={0.02}
             onNodeHover={handleNodeHover}
             nodeCanvasObject={(node: any, ctx: CanvasRenderingContext2D) => {
               const graphNode = node as RuntimeGraphNode;
@@ -507,7 +534,7 @@ export function Knowledge() {
 
           {/* Chat Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((message, index) => (
+            {messages.map((message: Message, index: number) => (
               <div
                 key={index}
                 className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
