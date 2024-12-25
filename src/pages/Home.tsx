@@ -56,23 +56,24 @@ export const Home = () => {
         <div className="relative z-10 max-w-5xl mx-auto">
           <div className="flex flex-col items-center gap-4 text-center">
             <AnimatedText
-              text="Your Personal"
+              text="Your Personal CMO Agent"
               className="text-4xl md:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/50"
               delay={0.2}
             />
             <AnimatedText
-              text="Marketing Assistant"
-              className="text-4xl md:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/50"
+              text="driving 24/7 growth for your Business"
+              className="text-3xl md:text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/50"
               delay={0.4}
             />
+
             
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.5 }}
-              className="mt-4 text-neutral-300 max-w-xl mx-auto text-center text-lg"
+              className="mt-4 text-2xl text-neutral-300 max-w-xl mx-auto text-center text-lg"
             >
-              Robynn is a marketing platform built by marketers for marketers.
+              No CRM. No funnel. Just growth.
             </motion.div>
 
             <motion.div
